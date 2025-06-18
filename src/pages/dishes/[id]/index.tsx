@@ -134,6 +134,12 @@ export async function getStaticProps(context) {
   const slug = params.id;
   const dish = dish_by_id.find((item) => item.id === slug);
 
+  if (!dish) {
+    return {
+      notFound: true,
+    };
+  }
+
   return {
     props: {
       dish,
