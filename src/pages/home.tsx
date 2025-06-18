@@ -73,45 +73,12 @@ const HomePage = () => {
 
         <div className={"homeContentAnimation"}>
           <section className={styles.restaurantInformation}>
-            {/* 모바일 */}
             <div className={styles.infoMobile}>
               {RESTAURANT_INFOS.map((info) => (
                 <div key={info.label} className={styles.infoMobileRow}>
                   {info.icon} {info.value}
                 </div>
               ))}
-            </div>
-            {/* 데스크탑 */}
-            <div className={styles.infoDesktop}>
-              {RESTAURANT_INFOS.map((info) =>
-                info.label === "운영시간" ? (
-                  <div key={info.label} className={styles.businessHours}>
-                    <ClockCircleOutlined />
-                    <div className={styles.hoursDesktop}>
-                      <div className={styles.hoursContainer}>
-                        <span className={styles.days}>평일</span>
-                        <span>
-                          {BUSINESS_HOURS.weekday.open} -{" "}
-                          {BUSINESS_HOURS.weekday.close}
-                        </span>
-                        <span className={styles.days}>주말</span>
-                        <span>
-                          {BUSINESS_HOURS.weekend.open} -{" "}
-                          {BUSINESS_HOURS.weekend.close}
-                        </span>
-                        <div className={styles.lastOrder}>
-                          Last Order: 평일 {BUSINESS_HOURS.weekday.lastOrder} /
-                          주말 {BUSINESS_HOURS.weekend.lastOrder}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                ) : (
-                  <div key={info.label} className={styles.informationRow}>
-                    {info.icon} {info.value}
-                  </div>
-                )
-              )}
             </div>
           </section>
 

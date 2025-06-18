@@ -46,52 +46,52 @@ export const DishModal = ({ isModalOpen, handleOk, handleCancel }) => {
           autoComplete="off"
         >
           <Form.Item
-            label="Dish name"
+            label="메뉴명"
             name="dishname"
-            rules={[{ required: true, message: "Please input dish name" }]}
+            rules={[{ required: true, message: "메뉴명을 입력하세요" }]}
           >
             <Input />
           </Form.Item>
 
           <Form.Item
-            label="Image Url"
+            label="이미지 URL"
             name="imageurl"
-            rules={[{ required: true, message: "Please input image url" }]}
+            rules={[{ required: true, message: "이미지 URL을 입력하세요" }]}
           >
             <Input />
           </Form.Item>
 
           <Form.Item
-            label="Category"
+            label="카테고리"
             name="category"
-            rules={[{ required: true, message: "Please select category" }]}
-            initialValue="starters"
+            rules={[{ required: true, message: "카테고리를 선택하세요" }]}
+            initialValue="dishes"
           >
             <Select
               style={{ width: "100%" }}
               onChange={handleChange}
               options={[
-                { value: "starters", label: "Starters" },
-                { value: "salads", label: "Salads" },
-                { value: "main dishes", label: "Main Dishes" },
-                { value: "beverages", label: "Beverages" },
-                { value: "deserts", label: "Deserts" },
+                { value: "dishes", label: "Dishes" },
+                { value: "coffee", label: "Coffee" },
+                { value: "beer", label: "Beer" },
+                { value: "wine", label: "Wine" },
+                { value: "desserts", label: "Desserts" },
               ]}
             ></Select>
           </Form.Item>
 
           <Form.Item
-            label="Description"
+            label="설명"
             name="description"
-            rules={[{ required: true, message: "Please input description" }]}
+            rules={[{ required: true, message: "설명을 입력하세요" }]}
           >
             <Input />
           </Form.Item>
 
           <Form.Item
-            label="Price"
+            label="가격"
             name="price"
-            rules={[{ required: true, message: "Please input price" }]}
+            rules={[{ required: true, message: "가격을 입력하세요" }]}
           >
             <Input />
           </Form.Item>
@@ -113,10 +113,7 @@ export const DishModal = ({ isModalOpen, handleOk, handleCancel }) => {
             >
               Cancel
             </Button>
-            <Button
-              type="primary"
-              htmlType="submit"
-            >
+            <Button type="primary" htmlType="submit">
               Submit
             </Button>
           </div>

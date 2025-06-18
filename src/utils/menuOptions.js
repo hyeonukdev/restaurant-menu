@@ -2,34 +2,35 @@ import {
   IconIceCream2,
   IconGlassFull,
   IconMeat,
-  IconSalad,
-  IconCarrot,
+  IconBeer,
+  IconCoffee,
+  IconBread,
 } from "@tabler/icons-react";
 
 export const menuOptions = [
   {
-    key: "starters",
-    icon: <IconCarrot size={32} />,
-    label: <a href="#starters">Starters</a>,
+    key: "dishes",
+    icon: <IconBread size={32} />,
+    label: <a href="#dishes">Dishes</a>,
   },
   {
-    key: "salads",
-    icon: <IconSalad size={32} />,
-    label: <a href="#salads">Salads</a>,
+    key: "coffee",
+    icon: <IconCoffee size={32} />,
+    label: <a href="#coffee">Coffee</a>,
   },
   {
-    key: "main dishes",
-    icon: <IconMeat size={32} />,
-    label: <a href="#main dishes">Main dishes</a>,
+    key: "beer",
+    icon: <IconBeer size={32} />,
+    label: <a href="#beer">Beer</a>,
   },
   {
-    key: "beverages",
+    key: "wine",
     icon: <IconGlassFull size={32} />,
-    label: <a href="#beverages">Beverages</a>,
+    label: <a href="#wine">Wine</a>,
   },
   {
-    key: "deserts",
+    key: "desserts",
     icon: <IconIceCream2 size={32} />,
-    label: <a href="#deserts">Desserts</a>,
+    label: <a href="#desserts">Desserts</a>,
   },
 ];

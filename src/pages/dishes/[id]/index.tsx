@@ -20,6 +20,7 @@ const { Title, Paragraph, Text } = Typography;
 import { DishLayout } from "../../../components/layouts";
 import { TMenuItem, TMenuSection, TRestaurant } from "@/types/dish";
 import styles from "../../../styles/dishDetailsCard.module.css";
+import { dish_by_id } from "@/../database/dish_by_id";
 
 interface IDishes {
   dish: TMenuItem;
@@ -53,10 +54,7 @@ const Dish = (props: IDishes) => {
             cover={
               <>
                 {!dish?.imageUrl ? (
-                  <Skeleton.Image
-                    active
-                    className={styles.image}
-                  />
+                  <Skeleton.Image active className={styles.image} />
                 ) : (
                   <Image
                     className={styles.image}
@@ -72,33 +70,21 @@ const Dish = (props: IDishes) => {
           >
             <div className={styles.bodyCard}>
               {dish?.bestSeller && (
-                <Tag
-                  className={styles.bestSellerTag}
-                  color={token.colorInfo}
-                >
+                <Tag className={styles.bestSellerTag} color={token.colorInfo}>
                   Best seller
                 </Tag>
               )}
-              <Title
-                className={styles.dishName}
-                level={3}
-              >
+              <Title className={styles.dishName} level={3}>
                 {dish?.name}
               </Title>
 
               <Text className={styles.subtitle}>Ingredients</Text>
-              <Paragraph
-                type="secondary"
-                className={styles.paragraph}
-              >
+              <Paragraph type="secondary" className={styles.paragraph}>
                 {dish?.ingredients}
               </Paragraph>
 
               <Text className={styles.subtitle}>Description</Text>
-              <Paragraph
-                type="secondary"
-                className={styles.paragraph}
-              >
+              <Paragraph type="secondary" className={styles.paragraph}>
                 {dish?.description}
               </Paragraph>
 
@@ -146,10 +132,7 @@ export async function getStaticPaths() {
 export async function getStaticProps(context) {
   const { params } = context;
   const slug = params.id;
-  const response = await fetch(
-    `https://65e0ed51d3db23f7624a49a3.mockapi.io/items/${slug}`
-  );
-  const dish = await response.json();
+  const dish = dish_by_id.find((item) => item.id === slug);
 
   return {
     props: {

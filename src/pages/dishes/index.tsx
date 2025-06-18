@@ -12,6 +12,8 @@ import { DishesLayout } from "../../components/layouts";
 import styles from "../../styles/dishes.module.css";
 // import { ScrollToTop } from "@/components/products/ScrollToTop";
 
+import { dishes as restaurantData } from "@/../database/dishes";
+
 interface IDishes {
   dishes: TMenuSection[];
 }
@@ -83,20 +85,17 @@ const Dishes = (props: IDishes) => {
     </DishesLayout>
   );
 };
-export default Dishes;
 
 export async function getStaticProps() {
-  const response = await fetch(
-    "https://65e0ed51d3db23f7624a49a3.mockapi.io/magenta_kitchen"
-  );
-  const result = await response.json();
-  const dishes = result[0].sections;
+  const sections = restaurantData.sections;
 
   return {
     props: {
-      dishes,
+      dishes: sections,
     },
     // Re-generate every 10 minutes(600sec)
     revalidate: 600,
   };
 }
+
+export default Dishes;

@@ -36,6 +36,9 @@
   }
 }
 @media (min-width: 1024px) {
+  .restaurantInformation {
+    top: 4.5rem;
+  }
   .restaurantInformation .informationContainer div {
     display: inline;
   }
@@ -182,29 +185,19 @@
 }
 
 .infoMobile {
-  display: none;
+  display: block;
   font-size: 0.9rem;
-  text-align: center;
+  text-align: left;
   margin-bottom: 0.5rem;
   white-space: pre-line;
 }
-.infoDesktop {
-  display: block;
-}
+
 .informationRow {
   margin-bottom: 0.25rem;
   font-size: 1rem;
   display: flex;
   align-items: center;
   gap: 0.5rem;
-}
-@media (max-width: 767px) {
-  .infoMobile {
-    display: block;
-  }
-  .infoDesktop {
-    display: none;
-  }
 }
 
 .infoMobileRow {
