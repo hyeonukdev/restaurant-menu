@@ -29,14 +29,8 @@ export const HomeNavbar = () => {
           className={styles.navContainerOptions}
           onClick={() => router.push("/")}
         >
-          <IconChefHat
-            size={30}
-            color={`${token.colorPrimary}`}
-          />
-          <Title
-            level={1}
-            style={{ fontSize: "24px" }}
-          >
+          <IconChefHat size={30} color={`${token.colorPrimary}`} />
+          <Title level={1} style={{ fontSize: "24px" }}>
             Aukra
           </Title>
         </div>

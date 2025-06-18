@@ -33,50 +33,25 @@ export const DishesNavbar = () => {
       style={{ background: colorBgContainer, padding: "0px" }}
     >
       <nav className={`container ${styles.navContainer}`}>
-        <Link
-          href="/"
-          className={styles.navContainerOptions}
-        >
-          <IconChefHat
-            size={30}
-            color={`${token.colorPrimary}`}
-          />
-          <Title
-            level={1}
-            style={{ fontSize: "24px" }}
-          >
+        <Link href="/" className={styles.navContainerOptions}>
+          <IconChefHat size={30} color={`${token.colorPrimary}`} />
+          <Title level={1} style={{ fontSize: "24px" }}>
             Aukra
           </Title>
         </Link>
 
         <div className={navStyles.hamburgerMenuIcon}>
-          <Button
-            onClick={showDrawer}
-            icon={<MenuOutlined />}
-          />
+          <Button onClick={showDrawer} icon={<MenuOutlined />} />
         </div>
 
         <div className={styles.headerButtonsContainer}>
-          <Button
-            href="https://github.com/leoMirandaa/restaurant-menu.git"
-            target="_blank"
-            style={{ marginRight: ".5rem" }}
-            icon={<GithubOutlined />}
-          />
-
-          <Button
-            icon={<HomeOutlined />}
-            onClick={() => router.push("/")}
-          >
+          <Button icon={<HomeOutlined />} onClick={() => router.push("/")}>
             Home
           </Button>
         </div>
       </nav>
 
-      <DishesDrawer
-        open={open}
-        setOpen={setOpen}
-      />
+      <DishesDrawer open={open} setOpen={setOpen} />
     </Header>
   );
 };

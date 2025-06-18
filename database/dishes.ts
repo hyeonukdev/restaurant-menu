@@ -4,7 +4,7 @@ import { TRestaurant, PriceNameType } from "@/types/dish";
 export const dishes: TRestaurant = {
   name: "Aukra",
   description:
-    "Since 1990, Aukra has prided itself on being one of the best restaurants, a testament to its enduring legacy of excellence. Situated in the heart of California's culinary capital, Aukra has become a beloved institution, cherished by locals and revered by food enthusiasts from around the globe.",
+    "양재천 최고의 뷰맛집! 수제 오픈샌드위치와 커피, 그리고 와인의 올데이 브런치 카페입니다.",
   address: {
     street: "123 Main Street",
     city: "Anytown",

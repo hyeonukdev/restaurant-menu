@@ -7,5 +7,6 @@ export const darkTheme = {
     colorTextSecondary: "#ff2555", // price text
     colorInfoBg: "#303030", // arrow btn
     fontFamily: "Bitter",
+    colorBgContainer: "#1F1F1F",
   },
 };

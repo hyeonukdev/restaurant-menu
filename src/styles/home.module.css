@@ -1,6 +1,9 @@
 .mainContainer {
   color: hsla(0, 0%, 100%, 0.851);
   position: relative;
+  max-width: 100vw;
+  overflow-x: hidden;
+  box-sizing: border-box;
 }
 
 .img {
@@ -9,6 +12,7 @@
   object-fit: cover;
   position: relative;
   width: 100%;
+  max-width: 100vw;
 }
 
 .restaurantInformation {
@@ -16,6 +20,9 @@
   top: 0;
   margin-top: 1rem;
   width: 100%;
+  z-index: 1;
+  max-width: 100vw;
+  box-sizing: border-box;
 }
 @media (min-width: 768px) {
   .restaurantInformation {
@@ -38,6 +45,36 @@
   padding: 0 0 0.5rem 1.5rem;
 }
 
+.businessHours {
+  display: flex;
+  font-size: 1rem;
+}
+
+.hoursContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.hoursRow {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.days {
+  min-width: 40px;
+  font-weight: 500;
+}
+
+.lastOrder {
+  font-size: 0.9em;
+  color: rgba(255, 255, 255, 0.8);
+  margin-top: 0.25rem;
+  padding-left: 0.5rem;
+  border-left: 2px solid rgba(255, 255, 255, 0.3);
+}
+
 @media (min-width: 768px) {
   .informationContainer {
     padding-right: 1.5rem;
@@ -47,26 +84,134 @@
 .titleContainer {
   position: absolute;
   left: 50%;
-  top: 45%;
+  top: 50%;
   transform: translate(-50%, -50%);
   width: 80%;
   text-align: center;
   font-size: 2.5rem;
   padding-top: 0;
+  max-width: 100vw;
+  z-index: 1;
+  box-sizing: border-box;
 }
 
 .titleContainer .title {
   font-weight: normal;
   margin-bottom: 1rem;
+  line-height: 1.6;
+  white-space: pre-line;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
 }
 
 @media (min-width: 768px) {
   .title {
-    font-size: 5rem;
+    font-size: 2rem;
   }
 }
 @media (min-width: 1024px) {
   .title {
-    font-size: 7rem;
+    font-size: 2.5rem;
   }
+}
+
+@media (max-width: 767px) {
+  .restaurantInformation {
+    margin-top: 2rem;
+  }
+
+  .titleContainer {
+    top: 60%;
+  }
+
+  .title {
+    font-size: 1.5rem !important;
+  }
+
+  .businessHours {
+    flex-direction: row;
+    align-items: center;
+  }
+
+  .hoursContainer {
+    display: grid;
+    grid-template-columns: auto auto;
+    gap: 0.25rem 0.5rem;
+    font-size: 0.9rem;
+  }
+
+  .hoursRow {
+    gap: 0.5rem;
+  }
+
+  .days {
+    min-width: 35px;
+  }
+
+  .lastOrder {
+    grid-column: 1 / -1;
+    margin-top: 0.25rem;
+    font-size: 0.85em;
+    padding-left: 0.25rem;
+  }
+}
+
+.hoursMobile {
+  display: none;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.hoursDesktop {
+  display: block;
+  font-size: 1rem;
+}
+
+.businessHours svg {
+  font-size: 1.1rem;
+  margin-right: 0.5rem;
+  vertical-align: middle;
+}
+
+@media (max-width: 767px) {
+  .hoursMobile {
+    display: inline;
+  }
+  .hoursDesktop {
+    display: none;
+  }
+}
+
+.infoMobile {
+  display: none;
+  font-size: 0.9rem;
+  text-align: center;
+  margin-bottom: 0.5rem;
+  white-space: pre-line;
+}
+.infoDesktop {
+  display: block;
+}
+.informationRow {
+  margin-bottom: 0.25rem;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+@media (max-width: 767px) {
+  .infoMobile {
+    display: block;
+  }
+  .infoDesktop {
+    display: none;
+  }
+}
+
+.infoMobileRow {
+  margin-bottom: 0.2rem;
+  font-size: 0.95rem;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 0.3rem;
 }
