@@ -2,7 +2,7 @@ import { PriceNameType, TMenuItem } from "@/types/dish";
 
 //*** Mock data ***
 export const dish_by_id: TMenuItem[] = [
-  // 샌드위치/감자튀김
+  // Dishes
   {
     id: "1",
     name: "클래식 샌드위치",

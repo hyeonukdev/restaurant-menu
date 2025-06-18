@@ -57,10 +57,7 @@ export const PlateCard = ({
     >
       <div className={styles.bodyCard}>
         {bestSeller && (
-          <Tag
-            className={styles.bestSellerTag}
-            color={token.colorInfo}
-          >
+          <Tag className={styles.bestSellerTag} color={token.colorInfo}>
             Best seller
           </Tag>
         )}
@@ -75,10 +72,7 @@ export const PlateCard = ({
             </Paragraph>
           ))}
         </div>
-        <Paragraph
-          className={styles.ingredients}
-          type="secondary"
-        >
+        <Paragraph className={styles.ingredients} type="secondary">
           {ingredients}
         </Paragraph>
 
