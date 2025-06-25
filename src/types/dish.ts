@@ -26,18 +26,3 @@ export type TMenuSection = {
   description: string;
   items: TMenuItem[];
 };
-
-export type TAdress = {
-  street: string;
-  city: string;
-  state: string;
-  postalCode: string;
-  country: string;
-};
-
-export type TRestaurant = {
-  name: string;
-  description: string;
-  address: TAdress;
-  sections: TMenuSection[];
-};

@@ -18,7 +18,7 @@ const { Content } = Layout;
 const { Title, Paragraph, Text } = Typography;
 
 import { DishLayout } from "../../../components/layouts";
-import { TMenuItem, TMenuSection, TRestaurant } from "@/types/dish";
+import { TMenuItem } from "@/types/dish";
 import styles from "../../../styles/dishDetailsCard.module.css";
 import {
   getAllDishes,

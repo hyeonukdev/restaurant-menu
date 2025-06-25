@@ -13,45 +13,24 @@ export const HomeLayout = ({
   imageUrl,
 }: TLayout) => {
   return (
-    <Layout>
+    <Layout style={{ background: "transparent" }}>
       <Head>
         <title>{title}</title>
-        <meta
-          name="og:title"
-          content={title}
-        />
-        <meta
-          property="og:description"
-          content={pageDescription}
-        />
-        <meta
-          property="og:image"
-          content={imageUrl}
-        />
+        <meta name="og:title" content={title} />
+        <meta property="og:description" content={pageDescription} />
+        <meta property="og:image" content={imageUrl} />
 
         {/* Twitter */}
-        <meta
-          name="twitter:card"
-          content="summary_large_image"
-        />
-        <meta
-          name="twitter:title"
-          content={title}
-        />
-        <meta
-          name="twitter:description"
-          content={pageDescription}
-        />
-        <meta
-          name="twitter:image"
-          content={imageUrl}
-        />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={title} />
+        <meta name="twitter:description" content={pageDescription} />
+        <meta name="twitter:image" content={imageUrl} />
       </Head>
 
       <HomeNavbar />
 
-      <Content>
-        <Layout>{children}</Layout>
+      <Content style={{ background: "transparent" }}>
+        <Layout style={{ background: "transparent" }}>{children}</Layout>
       </Content>
 
       <FooterComponent />

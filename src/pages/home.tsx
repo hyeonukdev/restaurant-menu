@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/router";
 
 import { animate } from "motion";
@@ -9,69 +9,74 @@ import {
   PhoneOutlined,
   InstagramOutlined,
   ReadOutlined,
+  UpOutlined,
 } from "@ant-design/icons";
 
 import { HomeLayout } from "../components/layouts/HomeLayout";
+import { restaurantInfo } from "@/../database/restaurant"; // fallback용
 import styles from "../styles/home.module.css";
 
-const TITLE = "Aukra";
-const PAGE_DESCRIPTION = "Aukra Menu";
-const ADDRRESS = "서울특별시 서초구 양재천로 97";
-const PHONE = "050-71378-8186";
-const INSTA_ID = "@aukra.yangjae";
-
-const BUSINESS_HOURS = {
-  weekday: {
-    open: "10:00 am",
-    lastOrder: "6:00 pm",
-    close: "7:00 pm",
-  },
-  weekend: {
-    open: "10:00 am",
-    lastOrder: "9:00 pm",
-    close: "10:00 pm",
-  },
-};
-
-const MOBILE_BUSINESS_HOURS = "운영시간: 10:00~19:00(평일), 10:00~22:00(주말)";
-
-const INTRO =
-  "양재천 최고의 뷰맛집!\n\n수제 오픈샌드위치와 커피, 그리고 와인의\n올데이 브런치 카페입니다.";
-const OG_IMAGE = "/images/og-image.png";
-const HOME_LAYOUT_IMAGE = "/images/home-layout.png";
-
 const RESTAURANT_INFOS = [
-  { icon: <AimOutlined />, label: "주소", value: ADDRRESS },
-  { icon: <PhoneOutlined />, label: "전화", value: PHONE },
-  { icon: <InstagramOutlined />, label: "인스타", value: INSTA_ID },
+  {
+    icon: <InstagramOutlined />,
+    label: "인스타",
+    value: restaurantInfo.contact.instagram,
+  },
   {
     icon: <ClockCircleOutlined />,
     label: "운영시간",
-    value: MOBILE_BUSINESS_HOURS,
+    value: restaurantInfo.mobileBusinessHours,
   },
 ];
 
 const HomePage = () => {
   const router = useRouter();
+  const animationRef = useRef<HTMLDivElement>(null);
+  const [showScrollTop, setShowScrollTop] = useState(false);
 
   useEffect(() => {
-    animate(".homeContentAnimation", { opacity: [0, 1] }, { duration: 0.9 });
+    // DOM이 렌더링된 후에 애니메이션 실행
+    const timer = setTimeout(() => {
+      if (animationRef.current) {
+        animate(animationRef.current, { opacity: [0, 1] }, { duration: 0.9 });
+      }
+    }, 100);
+
+    return () => clearTimeout(timer);
   }, []);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollTop =
+        window.pageYOffset || document.documentElement.scrollTop;
+      setShowScrollTop(scrollTop > 300);
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  const scrollToTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+  };
 
   return (
     <HomeLayout
-      title={TITLE}
-      pageDescription={PAGE_DESCRIPTION}
-      imageUrl={OG_IMAGE}
+      title={restaurantInfo.name}
+      pageDescription={`${restaurantInfo.name} Menu`}
+      imageUrl={restaurantInfo.images.ogImage}
     >
       <main className={styles.mainContainer}>
         <img
           className={styles.img}
-          src={HOME_LAYOUT_IMAGE}
+          src={restaurantInfo.images.homeLayoutImage}
           alt="restaurant dish"
         />
 
-        <div className={"homeContentAnimation"}>
+        <div ref={animationRef} style={{ opacity: 0 }}>
           <section className={styles.restaurantInformation}>
             <div className={styles.infoMobile}>
               {RESTAURANT_INFOS.map((info) => (
@@ -83,17 +88,44 @@ const HomePage = () => {
           </section>
 
           <section className={styles.titleContainer}>
-            <h1 className={styles.title}>{INTRO}</h1>
+            <div className={styles.introSections}>
+              {restaurantInfo.intro.map((intro, index) => (
+                <div key={intro.id} className={styles.introSection}>
+                  <div
+                    className={`${styles.introTitle} ${
+                      index === 0 ? styles.mainTitle : styles.subTitle
+                    }`}
+                  >
+                    {intro.title}
+                  </div>
+                  <div className={styles.introContent}>{intro.content}</div>
+                </div>
+              ))}
+            </div>
+
             <Button
               type="primary"
               size="large"
               onClick={() => router.push("/dishes")}
+              className={styles.menuButton}
             >
               <ReadOutlined />
               VIEW OUR MENU
             </Button>
           </section>
         </div>
+
+        {/* Scroll to Top Button */}
+        {showScrollTop && (
+          <Button
+            type="primary"
+            shape="circle"
+            size="large"
+            icon={<UpOutlined />}
+            onClick={scrollToTop}
+            className={styles.scrollTopButton}
+          />
+        )}
       </main>
     </HomeLayout>
   );

@@ -12,7 +12,7 @@ import { DishesLayout } from "../../components/layouts";
 import styles from "../../styles/dishes.module.css";
 // import { ScrollToTop } from "@/components/products/ScrollToTop";
 
-import { dishes as restaurantData } from "@/../database/dishes";
+import { menuSections } from "@/../database/dishes";
 
 interface IDishes {
   dishes: TMenuSection[];
@@ -87,7 +87,7 @@ const Dishes = (props: IDishes) => {
 };
 
 export async function getStaticProps() {
-  const sections = restaurantData.sections;
+  const sections = menuSections.sections;
 
   return {
     props: {

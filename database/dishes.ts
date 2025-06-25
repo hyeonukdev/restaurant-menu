@@ -1,16 +1,16 @@
-import { TRestaurant, PriceNameType, TMenuItem } from "@/types/dish";
+import { PriceNameType, TMenuItem } from "@/types/dish";
 
-export const dishes: TRestaurant = {
-  name: "Aukra",
-  description:
-    "양재천 최고의 뷰맛집! 수제 오픈샌드위치와 커피, 그리고 와인의 올데이 브런치 카페입니다.",
-  address: {
-    street: "서울 서초구 양재천로 97",
-    city: "서울",
-    state: "서울특별시",
-    postalCode: "12345",
-    country: "대한민국",
-  },
+// 메뉴 섹션 데이터만 포함하는 타입
+export interface TMenuSections {
+  sections: {
+    name: string;
+    description: string;
+    items: TMenuItem[];
+  }[];
+}
+
+//*** Mock data ***
+export const menuSections: TMenuSections = {
   sections: [
     {
       name: "Dishes",
@@ -284,7 +284,7 @@ export const dishes: TRestaurant = {
 
 // 모든 메뉴 아이템을 평면화된 배열로 변환하는 함수
 export const getAllDishes = (): TMenuItem[] => {
-  return dishes.sections.flatMap((section) => section.items);
+  return menuSections.sections.flatMap((section) => section.items);
 };
 
 // ID로 특정 메뉴를 찾는 함수
