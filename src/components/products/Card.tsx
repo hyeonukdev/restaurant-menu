@@ -13,7 +13,7 @@ import styles from "../../styles/dishCard.module.css";
 export const PlateCard = ({
   id,
   name,
-  ingredients,
+  description,
   prices,
   imageUrl,
   bestSeller,
@@ -76,8 +76,8 @@ export const PlateCard = ({
             </Paragraph>
           ))}
         </div>
-        <Paragraph className={styles.ingredients} type="secondary">
-          {ingredients}
+        <Paragraph className={styles.description} type="secondary">
+          {description}
         </Paragraph>
 
         <Tooltip title="Details">
