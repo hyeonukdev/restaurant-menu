@@ -1,11 +1,13 @@
 import { useRouter } from "next/router";
 import Image from "next/image";
+import { useState } from "react";
 
-import { Button, Card, theme, Typography, Tag, Tooltip } from "antd";
+import { Button, Card, theme, Typography, Tag, Tooltip, Skeleton } from "antd";
 const { Title, Paragraph } = Typography;
 import { ArrowRightOutlined } from "@ant-design/icons";
 
 import { PriceNameType, TMenuItem, TPriceOption } from "@/types/dish";
+import { getMenuImageUrl } from "@/../database/dishes";
 import styles from "../../styles/dishCard.module.css";
 
 export const PlateCard = ({
@@ -17,6 +19,7 @@ export const PlateCard = ({
   bestSeller,
 }: TMenuItem) => {
   const router = useRouter();
+  const [imageError, setImageError] = useState(false);
 
   const { useToken } = theme;
   const { token } = useToken();
@@ -31,12 +34,6 @@ export const PlateCard = ({
       case PriceNameType.STANDARD:
         return "";
 
-      case PriceNameType.TWELVEOZ:
-        return "12Oz: ";
-
-      case PriceNameType.SIXTEENOZ:
-        return "16Oz: ";
-
       default:
         return `${name.charAt(0).toUpperCase() + name.slice(1)}: `;
     }
@@ -46,13 +43,20 @@ export const PlateCard = ({
     <Card
       className={styles.card}
       cover={
-        <Image
-          className={styles.image}
-          alt="dish food"
-          src={`${imageUrl}`}
-          width={200}
-          height={200}
-        />
+        <>
+          {imageError ? (
+            <Skeleton.Image active className={styles.image} />
+          ) : (
+            <Image
+              className={styles.image}
+              alt="dish food"
+              src={getMenuImageUrl(id)}
+              width={200}
+              height={200}
+              onError={() => setImageError(true)}
+            />
+          )}
+        </>
       }
     >
       <div className={styles.bodyCard}>
@@ -68,7 +72,7 @@ export const PlateCard = ({
           {prices.map(({ name, price }: TPriceOption, idx) => (
             <Paragraph key={`${name}-${price}-${idx}`}>
               {handlePriceName(name)}
-              <span style={{ color: token.colorTextSecondary }}>${price}</span>
+              <span style={{ color: token.colorTextSecondary }}>₩{price}</span>
             </Paragraph>
           ))}
         </div>

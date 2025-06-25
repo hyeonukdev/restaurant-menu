@@ -1,6 +1,5 @@
-import { TRestaurant, PriceNameType } from "@/types/dish";
+import { TRestaurant, PriceNameType, TMenuItem } from "@/types/dish";
 
-//*** Mock data ***
 export const dishes: TRestaurant = {
   name: "Aukra",
   description:
@@ -15,23 +14,70 @@ export const dishes: TRestaurant = {
   sections: [
     {
       name: "Dishes",
-      description: "수제 샌드위치와 바삭한 감자튀김 메뉴입니다.",
+      description: "오크라만의 메뉴를 만나보세요!",
       items: [
         {
           id: "1",
-          name: "클래식 샌드위치",
-          ingredients: "사워도우, 햄, 치즈, 양상추, 토마토, 머스터드, 마요네즈",
-          description: "신선한 재료와 직접 구운 빵으로 만든 클래식 샌드위치.",
-          prices: [{ name: PriceNameType.STANDARD, price: 8500 }],
+          name: "트러플 머쉬룸 샌드위치",
+          ingredients: "트리플 머쉬룸, ...",
+          description: "부드러운 감자, 촉촉한 버섯, 트러플 향의 조화!",
+          prices: [{ name: PriceNameType.STANDARD, price: 15000 }],
           imageUrl: "",
           bestSeller: true,
         },
         {
           id: "2",
-          name: "프렌치 프라이",
-          ingredients: "감자, 소금, 식용유",
-          description: "겉은 바삭하고 속은 부드러운 감자튀김.",
-          prices: [{ name: PriceNameType.STANDARD, price: 4500 }],
+          name: "선드라이드 바질 샌드위치",
+          ingredients: "크림치즈, 바질페스토, 토마토 콩피",
+          description:
+            "크림치즈와 바질페스토, 토마토 콩피가 올라간 바질 샌드위치!",
+          prices: [{ name: PriceNameType.STANDARD, price: 14000 }],
+          imageUrl: "",
+          bestSeller: false,
+        },
+        {
+          id: "3",
+          name: "에그인헬",
+          ingredients: "고기, 토마토, 양파, 마늘",
+          description:
+            "고기와 토마토, 양파와 마늘을 저온숙성 시킨 오크라식 에그인헬(빵과 함께 제공)",
+          prices: [{ name: PriceNameType.STANDARD, price: 16000 }],
+          imageUrl: "",
+          bestSeller: true,
+        },
+        {
+          id: "4",
+          name: "치킨난반",
+          ingredients: "치킨, 에그샐러드",
+          description: "바삭한 가라아게에 에그샐러드와 타르타르 한 스푼!",
+          prices: [{ name: PriceNameType.STANDARD, price: 19000 }],
+          imageUrl: "",
+          bestSeller: true,
+        },
+        {
+          id: "5",
+          name: "감자튀김",
+          ingredients: "감자",
+          description: "겉바속촉 감자튀김!",
+          prices: [{ name: PriceNameType.STANDARD, price: 7900 }],
+          imageUrl: "",
+          bestSeller: false,
+        },
+        {
+          id: "6",
+          name: "치아바타 추가",
+          ingredients: "",
+          description: "",
+          prices: [{ name: PriceNameType.STANDARD, price: 2000 }],
+          imageUrl: "",
+          bestSeller: false,
+        },
+        {
+          id: "7",
+          name: "바닐라 아이스크림",
+          ingredients: "",
+          description: "",
+          prices: [{ name: PriceNameType.STANDARD, price: 4000 }],
           imageUrl: "",
           bestSeller: false,
         },
@@ -42,41 +88,145 @@ export const dishes: TRestaurant = {
       description: "신선하게 내린 커피와 다양한 음료를 즐겨보세요.",
       items: [
         {
-          id: "3",
-          name: "아메리카노",
-          ingredients: "에스프레소, 물",
-          description: "진하고 깔끔한 아메리카노.",
-          prices: [
-            { name: PriceNameType.TWELVEOZ, price: 3500 },
-            { name: PriceNameType.SIXTEENOZ, price: 4000 },
-          ],
+          id: "8",
+          name: "아메리카노(ice/hot)",
+          ingredients: "",
+          description: "",
+          prices: [{ name: PriceNameType.STANDARD, price: 5500 }],
+          imageUrl: "",
+          bestSeller: false,
+        },
+        {
+          id: "9",
+          name: "카페라떼(ice/hot)",
+          ingredients: "",
+          description: "",
+          prices: [{ name: PriceNameType.STANDARD, price: 6000 }],
+          imageUrl: "",
+          bestSeller: false,
+        },
+        {
+          id: "10",
+          name: "바닐라라떼(ice/hot)",
+          ingredients: "",
+          description: "",
+          prices: [{ name: PriceNameType.STANDARD, price: 6500 }],
+          imageUrl: "",
+          bestSeller: false,
+        },
+        {
+          id: "11",
+          name: "디카페인 콜드부르",
+          ingredients: "",
+          description: "",
+          prices: [{ name: PriceNameType.STANDARD, price: 6000 }],
+          imageUrl: "",
+          bestSeller: false,
+        },
+        {
+          id: "12",
+          name: "디카페인 콜드부르 라떼",
+          ingredients: "",
+          description: "",
+          prices: [{ name: PriceNameType.STANDARD, price: 6500 }],
+          imageUrl: "",
+          bestSeller: false,
+        },
+        {
+          id: "13",
+          name: "크림커피(ice/hot)",
+          ingredients: "",
+          description: "",
+          prices: [{ name: PriceNameType.STANDARD, price: 6800 }],
           imageUrl: "",
           bestSeller: true,
         },
         {
-          id: "4",
-          name: "카페라떼",
-          ingredients: "에스프레소, 우유",
-          description: "부드럽고 고소한 카페라떼.",
-          prices: [
-            { name: PriceNameType.TWELVEOZ, price: 4000 },
-            { name: PriceNameType.SIXTEENOZ, price: 4500 },
-          ],
+          id: "14",
+          name: "초코라떼",
+          ingredients: "",
+          description: "",
+          prices: [{ name: PriceNameType.STANDARD, price: 6000 }],
           imageUrl: "",
           bestSeller: false,
+        },
+        {
+          id: "15",
+          name: "딸기라떼",
+          ingredients: "",
+          description: "",
+          prices: [{ name: PriceNameType.STANDARD, price: 6000 }],
+          imageUrl: "",
+          bestSeller: false,
+        },
+        {
+          id: "16",
+          name: "아이스크림 라떼",
+          ingredients: "",
+          description: "",
+          prices: [{ name: PriceNameType.STANDARD, price: 6800 }],
+          imageUrl: "",
+          bestSeller: true,
         },
       ],
     },
     {
       name: "Beer",
-      description: "시원하게 즐기는 다양한 수제 맥주.",
+      description: "시원하게 즐기는 다양한 맥주를 만나보세요!",
       items: [
         {
-          id: "5",
-          name: "크래프트 맥주",
-          ingredients: "보리, 홉, 효모, 물",
-          description: "로컬 브루어리에서 만든 신선한 수제 맥주.",
-          prices: [{ name: PriceNameType.STANDARD, price: 6000 }],
+          id: "17",
+          name: "하이네켄",
+          ingredients: "",
+          description: "",
+          prices: [{ name: PriceNameType.STANDARD, price: 8000 }],
+          imageUrl: "",
+          bestSeller: false,
+        },
+        {
+          id: "18",
+          name: "코로나",
+          ingredients: "",
+          description: "",
+          prices: [{ name: PriceNameType.STANDARD, price: 8000 }],
+          imageUrl: "",
+          bestSeller: false,
+        },
+        {
+          id: "19",
+          name: "버드와이저",
+          ingredients: "",
+          description: "",
+          prices: [{ name: PriceNameType.STANDARD, price: 7500 }],
+          imageUrl: "",
+          bestSeller: false,
+        },
+        {
+          id: "20",
+          name: "아사히 ",
+          ingredients: "",
+          description: "",
+          prices: [{ name: PriceNameType.STANDARD, price: 7500 }],
+          imageUrl: "",
+          bestSeller: false,
+        },
+        {
+          id: "21",
+          name: "콜센동크(PREMIUM)",
+          ingredients: "",
+          description:
+            "벨기에 전통 밀맥주로 맥아 향과 묵직한 바디감이 매력적인 에일 스타일 맥주",
+          prices: [{ name: PriceNameType.STANDARD, price: 12000 }],
+          imageUrl: "",
+          bestSeller: false,
+        },
+        {
+          id: "22",
+          name: "콜센동크 애플화이트(PREMIUM)",
+          ingredients: "",
+          description:
+            "벨기에 전통 밀맥주 + 천연 청사과가 느껴지는 청량감이 좋은 맥주",
+          prices: [{ name: PriceNameType.STANDARD, price: 12000 }],
           imageUrl: "",
           bestSeller: false,
         },
@@ -84,14 +234,41 @@ export const dishes: TRestaurant = {
     },
     {
       name: "Wine",
-      description: "엄선된 하우스 와인과 다양한 와인 리스트.",
+      description: "엄선된 하우스 와인을 만나보세요!",
       items: [
         {
-          id: "6",
-          name: "하우스 와인(레드/화이트)",
-          ingredients: "포도",
-          description: "가볍게 즐기기 좋은 하우스 와인.",
-          prices: [{ name: PriceNameType.STANDARD, price: 7000 }],
+          id: "23",
+          name: "까베르네 쇼비뇽(RED)",
+          ingredients: "",
+          description: "",
+          prices: [{ name: PriceNameType.STANDARD, price: 10000 }],
+          imageUrl: "",
+          bestSeller: false,
+        },
+        {
+          id: "24",
+          name: "쇼비뇽 블랑(WHITE)",
+          ingredients: "",
+          description: "",
+          prices: [{ name: PriceNameType.STANDARD, price: 10000 }],
+          imageUrl: "",
+          bestSeller: false,
+        },
+        {
+          id: "25",
+          name: "샤도네이(WHITE)",
+          ingredients: "",
+          description: "",
+          prices: [{ name: PriceNameType.STANDARD, price: 10000 }],
+          imageUrl: "",
+          bestSeller: false,
+        },
+        {
+          id: "26",
+          name: "BOTTLE(카운터문의)",
+          ingredients: "",
+          description: "",
+          prices: [{ name: PriceNameType.STANDARD, price: 0 }],
           imageUrl: "",
           bestSeller: false,
         },
@@ -100,18 +277,22 @@ export const dishes: TRestaurant = {
     {
       name: "Desserts",
       description: "식사를 마무리하는 달콤한 디저트.",
-      items: [
-        {
-          id: "7",
-          name: "티라미수",
-          ingredients:
-            "마스카포네, 에스프레소, 레이디핑거, 코코아파우더, 설탕, 계란",
-          description: "진한 커피향과 부드러운 식감의 이탈리안 디저트.",
-          prices: [{ name: PriceNameType.STANDARD, price: 5500 }],
-          imageUrl: "",
-          bestSeller: true,
-        },
-      ],
+      items: [],
     },
   ],
+};
+
+// 모든 메뉴 아이템을 평면화된 배열로 변환하는 함수
+export const getAllDishes = (): TMenuItem[] => {
+  return dishes.sections.flatMap((section) => section.items);
+};
+
+// ID로 특정 메뉴를 찾는 함수
+export const getDishById = (id: string): TMenuItem | undefined => {
+  return getAllDishes().find((dish) => dish.id === id);
+};
+
+// 메뉴 ID에 따라 이미지 경로를 생성하는 함수
+export const getMenuImageUrl = (id: string): string => {
+  return `/images/menu/menu_${id}.jpeg`;
 };

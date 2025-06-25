@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import Image from "next/image";
 
@@ -20,7 +20,11 @@ const { Title, Paragraph, Text } = Typography;
 import { DishLayout } from "../../../components/layouts";
 import { TMenuItem, TMenuSection, TRestaurant } from "@/types/dish";
 import styles from "../../../styles/dishDetailsCard.module.css";
-import { dish_by_id } from "@/../database/dish_by_id";
+import {
+  getAllDishes,
+  getDishById,
+  getMenuImageUrl,
+} from "@/../database/dishes";
 
 interface IDishes {
   dish: TMenuItem;
@@ -29,6 +33,7 @@ interface IDishes {
 const Dish = (props: IDishes) => {
   const { dish } = props;
   const router = useRouter();
+  const [imageError, setImageError] = useState(false);
 
   const { useToken } = theme;
   const { token } = useToken();
@@ -45,7 +50,7 @@ const Dish = (props: IDishes) => {
     <DishLayout
       title={dish?.name}
       pageDescription={`Ingredients and description`}
-      imageUrl={dish.imageUrl}
+      imageUrl={getMenuImageUrl(dish.id)}
     >
       <Content>
         <main>
@@ -53,16 +58,17 @@ const Dish = (props: IDishes) => {
             className={`${styles.card} cardDescriptionAnimation`}
             cover={
               <>
-                {!dish?.imageUrl ? (
+                {imageError ? (
                   <Skeleton.Image active className={styles.image} />
                 ) : (
                   <Image
                     className={styles.image}
                     style={{ borderRadius: "0px" }}
                     alt="dish food"
-                    src={dish?.imageUrl}
+                    src={getMenuImageUrl(dish.id)}
                     width={400}
                     height={450}
+                    onError={() => setImageError(true)}
                   />
                 )}
               </>
@@ -112,18 +118,10 @@ const Dish = (props: IDishes) => {
 export default Dish;
 
 export async function getStaticPaths() {
-  const response = await fetch(
-    "https://65e0ed51d3db23f7624a49a3.mockapi.io/magenta_kitchen"
-  );
-  const restaurant: TRestaurant[] = await response.json();
+  const allDishes = getAllDishes();
 
-  const sections = [];
-  restaurant[0]?.sections.map((section: TMenuSection) =>
-    section.items.map((item) => sections.push(item.id))
-  );
-
-  const paths = sections.map((dish: any) => {
-    return { params: { id: dish } };
+  const paths = allDishes.map((dish) => {
+    return { params: { id: dish.id } };
   });
 
   return { paths, fallback: false };
@@ -132,7 +130,7 @@ export async function getStaticPaths() {
 export async function getStaticProps(context) {
   const { params } = context;
   const slug = params.id;
-  const dish = dish_by_id.find((item) => item.id === slug);
+  const dish = getDishById(slug);
 
   if (!dish) {
     return {

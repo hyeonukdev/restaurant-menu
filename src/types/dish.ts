@@ -1,7 +1,5 @@
 export enum PriceNameType {
   STANDARD = "standard",
-  TWELVEOZ = "twelveOz",
-  SIXTEENOZ = "sixteenOz",
   SINGLE = "single",
   DOUBLE = "double",
   SMALL = "small",
