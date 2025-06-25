@@ -1,6 +1,44 @@
 .button {
-  position: fixed;
-  bottom: 1rem;
-  right: 1rem;
-  opacity: 0.8;
+  position: fixed !important;
+  bottom: 2rem !important;
+  right: 2rem !important;
+  top: auto !important;
+  left: auto !important;
+  z-index: 9999 !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5) !important;
+  transition: all 0.3s ease !important;
+  animation: fadeInUp 0.3s ease !important;
+  background: rgba(0, 0, 0, 0.8) !important;
+  border: 2px solid #d32f2f !important;
+  color: #d32f2f !important;
+  width: 50px !important;
+  height: 50px !important;
+  transform: none !important;
+  opacity: 1 !important;
+}
+
+.button:hover {
+  transform: translateY(-3px) !important;
+  box-shadow: 0 6px 16px rgba(211, 47, 47, 0.4) !important;
+  background: rgba(0, 0, 0, 0.9) !important;
+  border-color: #f44336 !important;
+  color: #f44336 !important;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 767px) {
+  .button {
+    bottom: 1.5rem !important;
+    right: 1.5rem !important;
+  }
 }

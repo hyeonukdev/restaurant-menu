@@ -29,6 +29,7 @@ export const ScrollToTop = () => {
       {showTopBtn && (
         <Button
           type="primary"
+          shape="circle"
           size="large"
           onClick={goToTop}
           className={styles.button}

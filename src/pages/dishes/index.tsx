@@ -5,12 +5,12 @@ const { Content } = Layout;
 const { Title, Paragraph } = Typography;
 
 import { PlateCard } from "../../components/products/Card";
+import { ScrollToTop } from "../../components/products/ScrollToTop";
 import { inView, animate } from "motion";
 
 import { TMenuSection } from "@/types/dish";
 import { DishesLayout } from "../../components/layouts";
 import styles from "../../styles/dishes.module.css";
-// import { ScrollToTop } from "@/components/products/ScrollToTop";
 
 import { menuSections } from "@/../database/dishes";
 
@@ -72,16 +72,20 @@ const Dishes = (props: IDishes) => {
               </Paragraph>
 
               <span className={styles.cardsContainer}>
-                {section?.items.map((item) => (
-                  <PlateCard key={item.id} {...item} />
-                ))}
+                {section?.items && section.items.length > 0 ? (
+                  section.items.map((item) => (
+                    <PlateCard key={item.id} {...item} />
+                  ))
+                ) : (
+                  <div className={styles.preparingMessage}>준비중...</div>
+                )}
               </span>
             </section>
           ))}
         </main>
       </Content>
 
-      {/* <ScrollToTop /> */}
+      <ScrollToTop />
     </DishesLayout>
   );
 };
