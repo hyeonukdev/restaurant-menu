@@ -1,5 +1,5 @@
 import { useRouter } from "next/router";
-import { GithubOutlined } from "@ant-design/icons";
+import { InstagramOutlined } from "@ant-design/icons";
 import { Button, Drawer, Typography, theme } from "antd";
 const { Title } = Typography;
 
@@ -43,19 +43,16 @@ export const DishesDrawer = ({ open, setOpen }) => {
             </Title>
           </div>
 
-          <MenuItems
-            isDrawerOpen={open}
-            setOpenDrawer={setOpen}
-          />
+          <MenuItems isDrawerOpen={open} setOpenDrawer={setOpen} />
         </div>
 
         <div className={styles.buttonContainer}>
           <Button
-            href="https://github.com/leoMirandaa/restaurant-menu.git"
+            href="https://www.instagram.com/aukra.yangjae/"
             target="_blank"
-            icon={<GithubOutlined />}
+            icon={<InstagramOutlined />}
           >
-            Github
+            @aukra.yangjae
           </Button>
         </div>
       </div>
