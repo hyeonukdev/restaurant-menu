@@ -20,14 +20,27 @@ import { inView, animate } from "motion";
 import { TMenuSection } from "@/types/dish";
 import { DishesLayout } from "../../components/layouts";
 import styles from "../../styles/dishes.module.css";
+import cardStyles from "../../styles/dishCard.module.css";
 
 import { useDishes } from "../../utils/useDishes";
 
 // 스켈레톤 카드 컴포넌트
 const SkeletonCard = () => (
-  <Card style={{ width: 300, margin: 16 }}>
-    <Skeleton.Image active style={{ width: "100%", height: 200 }} />
-    <Skeleton active paragraph={{ rows: 3 }} />
+  <Card
+    className={cardStyles.card}
+    cover={<Skeleton.Image active style={{ width: "100%", height: 200 }} />}
+  >
+    <div className={cardStyles.bodyCard}>
+      <Skeleton.Input
+        active
+        size="large"
+        style={{ width: "80%", marginBottom: 8 }}
+      />
+      <div className={cardStyles.pricesContainer}>
+        <Skeleton active paragraph={{ rows: 1 }} style={{ marginBottom: 8 }} />
+      </div>
+      <Skeleton active paragraph={{ rows: 2 }} style={{ marginBottom: 16 }} />
+    </div>
   </Card>
 );
 
@@ -40,11 +53,11 @@ const SkeletonSection = () => (
       style={{ width: 200, marginBottom: 16 }}
     />
     <Skeleton active paragraph={{ rows: 1 }} style={{ marginBottom: 24 }} />
-    <div className={styles.cardsContainer}>
+    <span className={styles.cardsContainer}>
       {[1, 2, 3, 4].map((i) => (
         <SkeletonCard key={i} />
       ))}
-    </div>
+    </span>
   </section>
 );
 
