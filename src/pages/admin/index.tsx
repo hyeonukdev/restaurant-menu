@@ -121,7 +121,9 @@ const adminPage = () => {
           alt={record.name}
           width={80}
           height={80}
-          fallbackText="이미지 없음"
+          fallbackText=""
+          showIcon={false}
+          hideOnError={true}
         />
       ),
     },

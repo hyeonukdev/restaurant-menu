@@ -13,17 +13,20 @@
 .image {
   object-fit: cover;
   min-width: 300px;
+  max-height: 300px;
 }
 
 @media (min-width: 768px) {
   .image {
-    min-height: 600px;
+    min-height: 300px;
+    max-height: 300px;
     min-width: 350px;
   }
 }
 @media (min-width: 1024px) {
   .image {
-    min-height: 400px;
+    min-height: 300px;
+    max-height: 300px;
     min-width: 350px;
   }
 }

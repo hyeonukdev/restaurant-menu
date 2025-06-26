@@ -43,23 +43,40 @@ export const PlateCard = ({
     <Card
       className={styles.card}
       cover={
-        <SafeImage
-          className={styles.image}
-          alt="dish food"
-          src={imageUrl || getMenuImageUrl(id)}
-          width={200}
-          height={200}
-          fallbackText="이미지 없음"
-        />
+        <div style={{ position: "relative" }}>
+          <SafeImage
+            className={styles.image}
+            alt="dish food"
+            src={imageUrl || getMenuImageUrl(id)}
+            width={300}
+            height={200}
+            fallbackText=""
+            showIcon={false}
+            hideOnError={true}
+          />
+          {bestSeller && (
+            <Tag
+              color={token.colorInfo}
+              style={{
+                position: "absolute",
+                top: "8px",
+                right: "8px",
+                zIndex: 10,
+                margin: 0,
+                fontSize: "12px",
+                fontWeight: 600,
+                padding: "4px 8px",
+                borderRadius: "12px",
+                boxShadow: "0 2px 8px rgba(0, 0, 0, 0.2)",
+              }}
+            >
+              Best seller
+            </Tag>
+          )}
+        </div>
       }
     >
       <div className={styles.bodyCard}>
-        {bestSeller && (
-          <Tag className={styles.bestSellerTag} color={token.colorInfo}>
-            Best seller
-          </Tag>
-        )}
-
         <Title level={3}>{name}</Title>
 
         <div className={styles.pricesContainer}>

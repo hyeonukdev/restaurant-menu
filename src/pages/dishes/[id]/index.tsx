@@ -100,8 +100,10 @@ const Dish = () => {
                 alt="dish food"
                 src={dish?.imageUrl || `/images/menu/menu_${id}.jpeg`}
                 width={400}
-                height={450}
-                fallbackText="이미지 없음"
+                height={300}
+                fallbackText=""
+                showIcon={false}
+                backgroundImage="/images/placeholder.svg"
               />
             }
           >
