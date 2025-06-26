@@ -1,14 +1,14 @@
-import { menuSections } from "@/../database/dishes";
+import { restaurantInfo } from "@/../database/restaurant";
 
 export default function handler(req, res) {
   if (req.method === "GET") {
     // 캐싱 헤더 설정
     res.setHeader("Cache-Control", "public, max-age=300, s-maxage=300"); // 5분 캐시
-    res.setHeader("ETag", `"dishes-${Date.now()}"`); // ETag 추가
+    res.setHeader("ETag", `"restaurant-${Date.now()}"`); // ETag 추가
 
     res.status(200).json({
-      message: "Welcome to Aukra",
-      data: menuSections.sections,
+      message: "Restaurant information retrieved successfully",
+      data: restaurantInfo,
     });
   } else {
     res.setHeader("Allow", ["GET"]);

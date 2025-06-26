@@ -10,7 +10,7 @@
 
   display: grid;
   grid-template-columns: 1fr;
-  opacity: 0;
+  opacity: 1;
 }
 
 .preparingMessage {

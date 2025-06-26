@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/router";
 
 import { animate } from "motion";
-import { Button } from "antd";
+import { Button, Spin, Alert, Skeleton, Card } from "antd";
 import {
   AimOutlined,
   ClockCircleOutlined,
@@ -14,25 +14,75 @@ import {
 
 import { HomeLayout } from "../components/layouts/HomeLayout";
 import { restaurantInfo } from "@/../database/restaurant"; // fallback용
+import { useRestaurant } from "../utils/useRestaurant";
 import styles from "../styles/home.module.css";
 
-const RESTAURANT_INFOS = [
-  {
-    icon: <InstagramOutlined />,
-    label: "인스타",
-    value: restaurantInfo.contact.instagram,
-  },
-  {
-    icon: <ClockCircleOutlined />,
-    label: "운영시간",
-    value: restaurantInfo.mobileBusinessHours,
-  },
-];
+// 스켈레톤 홈페이지 컴포넌트
+const HomeSkeleton = () => (
+  <main className={styles.mainContainer}>
+    <Skeleton.Image
+      active
+      style={{ width: "100%", height: 400, marginBottom: 24 }}
+    />
+
+    <div style={{ opacity: 1 }}>
+      <section className={styles.restaurantInformation}>
+        <div className={styles.infoMobile}>
+          {[1, 2].map((i) => (
+            <div key={i} className={styles.infoMobileRow}>
+              <Skeleton active paragraph={{ rows: 1 }} style={{ width: 200 }} />
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section className={styles.titleContainer}>
+        <div className={styles.introSections}>
+          {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
+            <div key={i} className={styles.introSection}>
+              <Skeleton.Input
+                active
+                size="small"
+                style={{ width: 150, marginBottom: 8 }}
+              />
+              <Skeleton active paragraph={{ rows: 2 }} />
+            </div>
+          ))}
+        </div>
+
+        <Skeleton.Button
+          active
+          size="large"
+          style={{ width: 200, height: 40 }}
+        />
+      </section>
+    </div>
+  </main>
+);
 
 const HomePage = () => {
   const router = useRouter();
   const animationRef = useRef<HTMLDivElement>(null);
   const [showScrollTop, setShowScrollTop] = useState(false);
+
+  // API에서 restaurant 정보 가져오기 (initialData 없이 호출하여 API 요청 발생)
+  const { restaurant, loading, error, refetch } = useRestaurant();
+
+  // restaurant 정보가 로딩 중이거나 없으면 fallback 데이터 사용
+  const currentRestaurant = restaurant || restaurantInfo;
+
+  const RESTAURANT_INFOS = [
+    {
+      icon: <InstagramOutlined />,
+      label: "인스타",
+      value: currentRestaurant.contact.instagram,
+    },
+    {
+      icon: <ClockCircleOutlined />,
+      label: "운영시간",
+      value: currentRestaurant.mobileBusinessHours,
+    },
+  ];
 
   useEffect(() => {
     // DOM이 렌더링된 후에 애니메이션 실행
@@ -65,68 +115,87 @@ const HomePage = () => {
 
   return (
     <HomeLayout
-      title={restaurantInfo.name}
-      pageDescription={`${restaurantInfo.name} Menu`}
-      imageUrl={restaurantInfo.images.ogImage}
+      title={currentRestaurant.name}
+      pageDescription={`${currentRestaurant.name} Menu`}
+      imageUrl={currentRestaurant.images.ogImage}
     >
-      <main className={styles.mainContainer}>
-        <img
-          className={styles.img}
-          src={restaurantInfo.images.homeLayoutImage}
-          alt="restaurant dish"
-        />
+      {loading ? (
+        <HomeSkeleton />
+      ) : (
+        <main className={styles.mainContainer}>
+          {error && (
+            <Alert
+              message="정보 로딩 오류"
+              description={error}
+              type="warning"
+              showIcon
+              action={
+                <Button size="small" onClick={refetch}>
+                  다시 시도
+                </Button>
+              }
+              style={{ marginBottom: 16 }}
+            />
+          )}
 
-        <div ref={animationRef} style={{ opacity: 0 }}>
-          <section className={styles.restaurantInformation}>
-            <div className={styles.infoMobile}>
-              {RESTAURANT_INFOS.map((info) => (
-                <div key={info.label} className={styles.infoMobileRow}>
-                  {info.icon} {info.value}
-                </div>
-              ))}
-            </div>
-          </section>
+          <img
+            className={styles.img}
+            src={currentRestaurant.images.homeLayoutImage}
+            alt="restaurant dish"
+          />
 
-          <section className={styles.titleContainer}>
-            <div className={styles.introSections}>
-              {restaurantInfo.intro.map((intro, index) => (
-                <div key={intro.id} className={styles.introSection}>
-                  <div
-                    className={`${styles.introTitle} ${
-                      index === 0 ? styles.mainTitle : styles.subTitle
-                    }`}
-                  >
-                    {intro.title}
+          <div ref={animationRef} style={{ opacity: 0 }}>
+            <section className={styles.restaurantInformation}>
+              <div className={styles.infoMobile}>
+                {RESTAURANT_INFOS.map((info) => (
+                  <div key={info.label} className={styles.infoMobileRow}>
+                    {info.icon} {info.value}
                   </div>
-                  <div className={styles.introContent}>{intro.content}</div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            </section>
 
+            <section className={styles.titleContainer}>
+              <div className={styles.introSections}>
+                {currentRestaurant.intro.map((intro, index) => (
+                  <div key={intro.id} className={styles.introSection}>
+                    <div
+                      className={`${styles.introTitle} ${
+                        index === 0 ? styles.mainTitle : styles.subTitle
+                      }`}
+                    >
+                      {intro.title}
+                    </div>
+                    <div className={styles.introContent}>{intro.content}</div>
+                  </div>
+                ))}
+              </div>
+
+              <Button
+                type="primary"
+                size="large"
+                onClick={() => router.push("/dishes")}
+                className={styles.menuButton}
+              >
+                <ReadOutlined />
+                VIEW OUR MENU
+              </Button>
+            </section>
+          </div>
+
+          {/* Scroll to Top Button */}
+          {showScrollTop && (
             <Button
               type="primary"
+              shape="circle"
               size="large"
-              onClick={() => router.push("/dishes")}
-              className={styles.menuButton}
-            >
-              <ReadOutlined />
-              VIEW OUR MENU
-            </Button>
-          </section>
-        </div>
-
-        {/* Scroll to Top Button */}
-        {showScrollTop && (
-          <Button
-            type="primary"
-            shape="circle"
-            size="large"
-            icon={<UpOutlined />}
-            onClick={scrollToTop}
-            className={styles.scrollTopButton}
-          />
-        )}
-      </main>
+              icon={<UpOutlined />}
+              onClick={scrollToTop}
+              className={styles.scrollTopButton}
+            />
+          )}
+        </main>
+      )}
     </HomeLayout>
   );
 };

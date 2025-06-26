@@ -5,9 +5,15 @@ const { Footer } = Layout;
 import styles from "../../styles/footer.module.css";
 const { Paragraph } = Typography;
 
-const FOOTER = "Aukra";
+import { useRestaurant } from "../../utils/useRestaurant";
+import { restaurantInfo } from "@/../database/restaurant";
 
 export const FooterComponent = () => {
+  const { restaurant } = useRestaurant();
+
+  // restaurant 정보가 없으면 fallback 데이터 사용
+  const currentRestaurant = restaurant || restaurantInfo;
+
   const {
     token: { colorBgContainer },
   } = theme.useToken();
@@ -22,7 +28,7 @@ export const FooterComponent = () => {
         href="https://github.com/leoMirandaa"
         target="_blank"
       >
-        <Paragraph>Aukra ©2025</Paragraph>
+        <Paragraph>{currentRestaurant.name} ©2025</Paragraph>
       </Link>
     </Footer>
   );
