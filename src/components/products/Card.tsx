@@ -8,6 +8,7 @@ import { ArrowRightOutlined } from "@ant-design/icons";
 
 import { PriceNameType, TMenuItem, TPriceOption } from "@/types/dish";
 import { getMenuImageUrl } from "@/../database/dishes";
+import { SafeImage } from "@/components/ui";
 import styles from "../../styles/dishCard.module.css";
 
 export const PlateCard = ({
@@ -19,7 +20,6 @@ export const PlateCard = ({
   bestSeller,
 }: TMenuItem) => {
   const router = useRouter();
-  const [imageError, setImageError] = useState(false);
 
   const { useToken } = theme;
   const { token } = useToken();
@@ -43,20 +43,14 @@ export const PlateCard = ({
     <Card
       className={styles.card}
       cover={
-        <>
-          {imageError ? (
-            <Skeleton.Image active className={styles.image} />
-          ) : (
-            <Image
-              className={styles.image}
-              alt="dish food"
-              src={getMenuImageUrl(id)}
-              width={200}
-              height={200}
-              onError={() => setImageError(true)}
-            />
-          )}
-        </>
+        <SafeImage
+          className={styles.image}
+          alt="dish food"
+          src={imageUrl || getMenuImageUrl(id)}
+          width={200}
+          height={200}
+          fallbackText="이미지 없음"
+        />
       }
     >
       <div className={styles.bodyCard}>

@@ -1,6 +1,5 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useRouter } from "next/router";
-import Image from "next/image";
 
 import { animate } from "motion";
 import {
@@ -13,13 +12,13 @@ import {
   Tooltip,
   theme,
   Alert,
-  Spin,
 } from "antd";
 import { ArrowLeftOutlined } from "@ant-design/icons";
 const { Content } = Layout;
 const { Title, Paragraph, Text } = Typography;
 
 import { DishLayout } from "../../../components/layouts";
+import { SafeImage } from "@/components/ui";
 import { TMenuItem } from "@/types/dish";
 import styles from "../../../styles/dishDetailsCard.module.css";
 import { useDish } from "../../../utils/useDish";
@@ -38,7 +37,6 @@ const DishSkeleton = () => (
 const Dish = () => {
   const router = useRouter();
   const { id } = router.query;
-  const [imageError, setImageError] = useState(false);
 
   const { dish, loading, error, refetch } = useDish(id as string);
 
@@ -112,21 +110,15 @@ const Dish = () => {
           <Card
             className={`${styles.card} cardDescriptionAnimation`}
             cover={
-              <>
-                {imageError ? (
-                  <Skeleton.Image active className={styles.image} />
-                ) : (
-                  <Image
-                    className={styles.image}
-                    style={{ borderRadius: "0px" }}
-                    alt="dish food"
-                    src={dish.imageUrl || `/images/menu/menu_${dish.id}.jpeg`}
-                    width={400}
-                    height={450}
-                    onError={() => setImageError(true)}
-                  />
-                )}
-              </>
+              <SafeImage
+                className={styles.image}
+                style={{ borderRadius: "0px" }}
+                alt="dish food"
+                src={dish.imageUrl || `/images/menu/menu_${dish.id}.jpeg`}
+                width={400}
+                height={450}
+                fallbackText="이미지 없음"
+              />
             }
           >
             <div className={styles.bodyCard}>

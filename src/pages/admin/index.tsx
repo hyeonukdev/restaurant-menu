@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 
 import {
@@ -11,6 +11,7 @@ import {
   Button,
   Card,
   Tag,
+  Spin,
 } from "antd";
 const { Content } = Layout;
 const { Title } = Typography;
@@ -20,119 +21,131 @@ import { IconPlus } from "@tabler/icons-react";
 
 import { DishModal } from "../../components/modals/DishModal";
 import { DishLayout } from "@/components/layouts";
+import { SafeImage } from "@/components/ui";
+import { useDishes } from "@/utils/useDishes";
+import { TMenuItem } from "@/types/dish";
 
-const categories = {
-  0: "Starters",
-  1: "Saladas",
-  2: "Main Dishses",
-  3: "Beverages",
-  4: "Deserts",
+// 카테고리 매핑
+const getCategoryName = (sectionName: string) => {
+  const categoryMap: { [key: string]: string } = {
+    Dishes: "메인 요리",
+    Coffee: "커피",
+    Beer: "맥주",
+    Wine: "와인",
+    Desserts: "디저트",
+  };
+  return categoryMap[sectionName] || sectionName;
+};
+
+// 모든 메뉴 아이템을 평면화하는 함수
+const flattenMenuItems = (sections: any[]): TMenuItem[] => {
+  return sections.flatMap((section) =>
+    section.items.map((item: TMenuItem) => ({
+      ...item,
+      category: section.name, // 카테고리 정보 추가
+    }))
+  );
 };
 
 const columns = [
   {
-    title: "Name",
+    title: "이름",
     dataIndex: "name",
     key: "name",
+    width: 200,
   },
   {
-    title: "Image",
-    dataIndex: "image",
-    key: "image",
-    render: (text) => (
-      <Image
-        style={{ objectFit: "cover" }}
-        src={text}
-        width={150}
-        height={150}
-        alt="img"
+    title: "이미지",
+    dataIndex: "imageUrl",
+    key: "imageUrl",
+    width: 120,
+    render: (imageUrl: string, record: TMenuItem) => (
+      <SafeImage
+        src={imageUrl || `/images/menu/menu_${record.id}.jpeg`}
+        alt={record.name}
+        width={80}
+        height={80}
+        fallbackText="이미지 없음"
       />
     ),
   },
   {
-    title: "Category",
+    title: "카테고리",
     dataIndex: "category",
     key: "category",
-    render: (text) => <Tag>{categories[text]}</Tag>,
+    width: 120,
+    render: (category: string) => (
+      <Tag color="blue">{getCategoryName(category)}</Tag>
+    ),
   },
   {
-    title: "Description",
+    title: "재료",
+    dataIndex: "ingredients",
+    key: "ingredients",
+    width: 200,
+    ellipsis: true,
+  },
+  {
+    title: "설명",
     dataIndex: "description",
     key: "description",
+    width: 250,
+    ellipsis: true,
   },
   {
-    title: "Price",
-    dataIndex: "price",
-    key: "price",
-    render: (text) => <div>$ {text}</div>,
+    title: "가격",
+    dataIndex: "prices",
+    key: "prices",
+    width: 100,
+    render: (prices: any[]) => (
+      <div>
+        {prices.map((price, index) => (
+          <div key={index}>
+            {price.name === "STANDARD" ? "기본" : price.name}: ₩
+            {price.price.toLocaleString()}
+          </div>
+        ))}
+      </div>
+    ),
   },
   {
-    title: "Action",
+    title: "베스트셀러",
+    dataIndex: "bestSeller",
+    key: "bestSeller",
+    width: 100,
+    render: (bestSeller: boolean) => (
+      <Tag color={bestSeller ? "red" : "default"}>
+        {bestSeller ? "베스트" : "일반"}
+      </Tag>
+    ),
+  },
+  {
+    title: "작업",
     key: "action",
-    render: (_, record) => (
+    width: 120,
+    render: (_: any, record: TMenuItem) => (
       <Space size="middle">
-        <Button type="text" icon={<EditOutlined />} shape="circle" />
-        <Button type="text" danger icon={<DeleteOutlined />} shape="circle" />
+        <Button
+          type="text"
+          icon={<EditOutlined />}
+          shape="circle"
+          title="수정"
+        />
+        <Button
+          type="text"
+          danger
+          icon={<DeleteOutlined />}
+          shape="circle"
+          title="삭제"
+        />
       </Space>
     ),
   },
 ];
 
-const data = [
-  {
-    key: "1",
-    name: "Zimon Timon",
-    image:
-      "https://images.unsplash.com/photo-1593545086735-abe33205bd4e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=774&q=80",
-    category: 0,
-    description:
-      "Lorem Ipsum is leap into electronic typesetting, remaining essentially unchanged",
-    price: 23,
-  },
-  {
-    key: "2",
-    name: "Jim Green",
-    image:
-      "https://images.unsplash.com/photo-1524114664604-cd8133cd67ad?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=774&q=80",
-    category: 1,
-    description:
-      "Lorem Ipsum is simply but also the leap into electronic typesetting, remaining essentially unchanged",
-    price: 44,
-  },
-  {
-    key: "3",
-    name: "Leo Miranda",
-    image:
-      "https://images.pexels.com/photos/6310077/pexels-photo-6310077.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
-    category: 1,
-    description:
-      "Lorem Ipsum is simply but also Ipsum is simply but the leap into electronic typesetting, remaining essentially unchanged",
-    price: 15,
-  },
-  {
-    key: "4",
-    name: "Joe Black",
-    image:
-      "https://img.freepik.com/free-photo/chicken-parmesan-caesar-salad-with-lettuce-cherry-tomatoes-inside-white-bowl-served-with-sauce-bread_114579-204.jpg?w=996&t=st=1685654701~exp=1685655301~hmac=d4f5e0e0843f2220c3d10250bbece26b7c426b7c13d88a210a8890bd924f6495",
-    category: 2,
-    description:
-      "Lorem Ipsum is simply but also Ipsum is simply but the leap into electronic typesetting, remaining essentially unchanged",
-    price: 15,
-  },
-  {
-    key: "5",
-    name: "Michale Steph",
-    image:
-      "https://images.pexels.com/photos/3491211/pexels-photo-3491211.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
-    category: 3,
-    description:
-      "Lorem Ipsum is simply but also Ipsum is simply but the leap into electronic typesetting, remaining essentially unchanged",
-    price: 15,
-  },
-];
-
 const adminPage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const { dishes, loading, error, refetch } = useDishes();
 
   const {
     token: { colorBgContainer },
@@ -140,6 +153,9 @@ const adminPage = () => {
 
   const { useToken } = theme;
   const { token } = useToken();
+
+  // 모든 메뉴 아이템을 평면화
+  const allMenuItems = dishes ? flattenMenuItems(dishes) : [];
 
   const showModal = () => {
     setIsModalOpen(true);
@@ -152,6 +168,62 @@ const adminPage = () => {
   const handleCancel = () => {
     setIsModalOpen(false);
   };
+
+  if (loading) {
+    return (
+      <DishLayout
+        title="Admin Dashboard"
+        pageDescription="Admin all your restaurant dishes in one place"
+        imageUrl={
+          process.env.NEXT_PUBLIC_OG_IMAGE_URL || "/images/og-image.png"
+        }
+      >
+        <Content
+          style={{
+            padding: "0px 24px",
+            borderRadius: "10px",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            minHeight: "400px",
+          }}
+        >
+          <Spin size="large" />
+        </Content>
+      </DishLayout>
+    );
+  }
+
+  if (error) {
+    return (
+      <DishLayout
+        title="Admin Dashboard"
+        pageDescription="Admin all your restaurant dishes in one place"
+        imageUrl={
+          process.env.NEXT_PUBLIC_OG_IMAGE_URL || "/images/og-image.png"
+        }
+      >
+        <Content
+          style={{
+            padding: "0px 24px",
+            borderRadius: "10px",
+          }}
+        >
+          <Alert
+            message="데이터 로딩 오류"
+            description={error}
+            type="error"
+            showIcon
+            action={
+              <Button size="small" onClick={refetch}>
+                다시 시도
+              </Button>
+            }
+          />
+        </Content>
+      </DishLayout>
+    );
+  }
 
   return (
     <DishLayout
@@ -180,8 +252,8 @@ const adminPage = () => {
             }}
           >
             <Alert
-              message="Admin dashboard example, feel free to implement"
-              type="warning"
+              message="실제 API 데이터를 사용하는 관리자 대시보드입니다"
+              type="success"
               showIcon
             />
 
@@ -192,10 +264,10 @@ const adminPage = () => {
                 marginTop: "10px",
               }}
             >
-              Admin Page
+              관리자 페이지
             </Title>
 
-            <Card style={{ width: "auto" }}>
+            <Card style={{ width: "100%", maxWidth: "1400px" }}>
               <div
                 style={{
                   display: "flex",
@@ -208,7 +280,7 @@ const adminPage = () => {
                   style={{ color: token.colorPrimary, margin: 0 }}
                   level={3}
                 >
-                  Dishes
+                  메뉴 관리 ({allMenuItems.length}개)
                 </Title>
 
                 <Button
@@ -220,17 +292,23 @@ const adminPage = () => {
                     justifyContent: "center",
                   }}
                 >
-                  Add dish
+                  메뉴 추가
                 </Button>
               </div>
 
               <Table
                 size="small"
                 columns={columns}
-                dataSource={data}
-                style={{ width: "1200px" }}
-                scroll={{ y: 400 }}
-                pagination={{ pageSize: 3 }}
+                dataSource={allMenuItems}
+                rowKey="id"
+                scroll={{ x: 1200, y: 600 }}
+                pagination={{
+                  pageSize: 10,
+                  showSizeChanger: true,
+                  showQuickJumper: true,
+                  showTotal: (total, range) =>
+                    `${range[0]}-${range[1]} / 총 ${total}개`,
+                }}
               />
             </Card>
           </div>
@@ -245,4 +323,5 @@ const adminPage = () => {
     </DishLayout>
   );
 };
+
 export default adminPage;

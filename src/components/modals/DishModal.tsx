@@ -1,17 +1,53 @@
-import { Button, Modal, Form, Input, Select, Divider, Typography } from "antd";
+import {
+  Button,
+  Modal,
+  Form,
+  Input,
+  Select,
+  Divider,
+  Typography,
+  Switch,
+  InputNumber,
+} from "antd";
 const { Title } = Typography;
-export const DishModal = ({ isModalOpen, handleOk, handleCancel }) => {
-  const onFinish = (values) => {
+const { TextArea } = Input;
+
+interface DishModalProps {
+  isModalOpen: boolean;
+  handleOk: () => void;
+  handleCancel: () => void;
+}
+
+export const DishModal = ({
+  isModalOpen,
+  handleOk,
+  handleCancel,
+}: DishModalProps) => {
+  const [form] = Form.useForm();
+
+  const onFinish = (values: any) => {
     console.log("Success:", values);
+    // TODO: API 호출로 메뉴 추가
+    handleOk();
+    form.resetFields();
   };
 
-  const onFinishFailed = (errorInfo) => {
+  const onFinishFailed = (errorInfo: any) => {
     console.log("Failed:", errorInfo);
   };
 
-  const handleChange = (value) => {
-    console.log(`selected ${value}`);
+  const handleCancelClick = () => {
+    form.resetFields();
+    handleCancel();
   };
+
+  const categoryOptions = [
+    { value: "Dishes", label: "메인 요리" },
+    { value: "Coffee", label: "커피" },
+    { value: "Beer", label: "맥주" },
+    { value: "Wine", label: "와인" },
+    { value: "Desserts", label: "디저트" },
+  ];
 
   return (
     <>
@@ -23,61 +59,44 @@ export const DishModal = ({ isModalOpen, handleOk, handleCancel }) => {
               margin: "10px 0px",
             }}
           >
-            New Dish
+            새 메뉴 추가
           </Title>
         }
         open={isModalOpen}
         footer={[]}
-        // onOk={handleOk}
-        onCancel={handleCancel}
+        onCancel={handleCancelClick}
         closable={false}
-        width={520}
+        width={600}
       >
         <Divider />
 
         <Form
-          name="basic"
-          labelCol={{ span: 8 }}
-          wrapperCol={{ span: 16 }}
+          form={form}
+          name="dishForm"
+          labelCol={{ span: 6 }}
+          wrapperCol={{ span: 18 }}
           style={{ maxWidth: 600 }}
-          initialValues={{ remember: true }}
           onFinish={onFinish}
           onFinishFailed={onFinishFailed}
           autoComplete="off"
         >
           <Form.Item
             label="메뉴명"
-            name="dishname"
+            name="name"
             rules={[{ required: true, message: "메뉴명을 입력하세요" }]}
           >
-            <Input />
+            <Input placeholder="메뉴명을 입력하세요" />
           </Form.Item>
 
           <Form.Item
-            label="이미지 URL"
-            name="imageurl"
-            rules={[{ required: true, message: "이미지 URL을 입력하세요" }]}
+            label="재료"
+            name="ingredients"
+            rules={[{ required: true, message: "재료를 입력하세요" }]}
           >
-            <Input />
-          </Form.Item>
-
-          <Form.Item
-            label="카테고리"
-            name="category"
-            rules={[{ required: true, message: "카테고리를 선택하세요" }]}
-            initialValue="dishes"
-          >
-            <Select
-              style={{ width: "100%" }}
-              onChange={handleChange}
-              options={[
-                { value: "dishes", label: "Dishes" },
-                { value: "coffee", label: "Coffee" },
-                { value: "beer", label: "Beer" },
-                { value: "wine", label: "Wine" },
-                { value: "desserts", label: "Desserts" },
-              ]}
-            ></Select>
+            <TextArea
+              rows={2}
+              placeholder="재료를 입력하세요 (예: 감자, 버섯, 치즈)"
+            />
           </Form.Item>
 
           <Form.Item
@@ -85,15 +104,50 @@ export const DishModal = ({ isModalOpen, handleOk, handleCancel }) => {
             name="description"
             rules={[{ required: true, message: "설명을 입력하세요" }]}
           >
-            <Input />
+            <TextArea rows={3} placeholder="메뉴에 대한 설명을 입력하세요" />
           </Form.Item>
 
           <Form.Item
-            label="가격"
+            label="카테고리"
+            name="category"
+            rules={[{ required: true, message: "카테고리를 선택하세요" }]}
+            initialValue="Dishes"
+          >
+            <Select
+              style={{ width: "100%" }}
+              options={categoryOptions}
+              placeholder="카테고리를 선택하세요"
+            />
+          </Form.Item>
+
+          <Form.Item
+            label="기본 가격"
             name="price"
             rules={[{ required: true, message: "가격을 입력하세요" }]}
           >
-            <Input />
+            <InputNumber
+              style={{ width: "100%" }}
+              placeholder="가격을 입력하세요"
+              min={0}
+              addonBefore="₩"
+            />
+          </Form.Item>
+
+          <Form.Item
+            label="베스트셀러"
+            name="bestSeller"
+            valuePropName="checked"
+            initialValue={false}
+          >
+            <Switch />
+          </Form.Item>
+
+          <Form.Item
+            label="이미지 URL"
+            name="imageUrl"
+            rules={[{ required: false, message: "이미지 URL을 입력하세요" }]}
+          >
+            <Input placeholder="이미지 URL을 입력하세요 (선택사항)" />
           </Form.Item>
 
           <div
@@ -107,14 +161,14 @@ export const DishModal = ({ isModalOpen, handleOk, handleCancel }) => {
             }}
           >
             <Button
-              onClick={handleCancel}
+              onClick={handleCancelClick}
               htmlType="reset"
               style={{ marginRight: "10px" }}
             >
-              Cancel
+              취소
             </Button>
             <Button type="primary" htmlType="submit">
-              Submit
+              추가
             </Button>
           </div>
         </Form>
