@@ -296,3 +296,36 @@ export const getDishById = (id: string): TMenuItem | undefined => {
 export const getMenuImageUrl = (id: string): string => {
   return `/images/menu/menu_${id}.jpeg`;
 };
+
+// 메뉴 업데이트 함수
+export const updateDish = (
+  id: string,
+  updatedDish: TMenuItem
+): TMenuItem | null => {
+  // 모든 섹션을 순회하면서 해당 ID의 메뉴를 찾아 업데이트
+  for (
+    let sectionIndex = 0;
+    sectionIndex < menuSections.sections.length;
+    sectionIndex++
+  ) {
+    const section = menuSections.sections[sectionIndex];
+    const dishIndex = section.items.findIndex((dish) => dish.id === id);
+
+    if (dishIndex !== -1) {
+      // 기존 메뉴 정보를 유지하면서 업데이트된 정보로 교체
+      const originalDish = section.items[dishIndex];
+      const updatedDishWithId = {
+        ...originalDish,
+        ...updatedDish,
+        id: originalDish.id, // ID는 변경 불가
+      };
+
+      // 메뉴 업데이트
+      menuSections.sections[sectionIndex].items[dishIndex] = updatedDishWithId;
+
+      return updatedDishWithId;
+    }
+  }
+
+  return null; // 해당 ID의 메뉴를 찾지 못한 경우
+};

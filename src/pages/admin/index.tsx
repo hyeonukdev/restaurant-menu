@@ -12,6 +12,7 @@ import {
   Card,
   Tag,
   Spin,
+  message,
 } from "antd";
 const { Content } = Layout;
 const { Title } = Typography;
@@ -20,6 +21,7 @@ import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import { IconPlus } from "@tabler/icons-react";
 
 import { DishModal } from "../../components/modals/DishModal";
+import { EditDishModal } from "../../components/modals/EditDishModal";
 import { DishLayout } from "@/components/layouts";
 import { SafeImage } from "@/components/ui";
 import { useDishes } from "@/utils/useDishes";
@@ -47,104 +49,10 @@ const flattenMenuItems = (sections: any[]): TMenuItem[] => {
   );
 };
 
-const columns = [
-  {
-    title: "이름",
-    dataIndex: "name",
-    key: "name",
-    width: 200,
-  },
-  {
-    title: "이미지",
-    dataIndex: "imageUrl",
-    key: "imageUrl",
-    width: 120,
-    render: (imageUrl: string, record: TMenuItem) => (
-      <SafeImage
-        src={imageUrl || `/images/menu/menu_${record.id}.jpeg`}
-        alt={record.name}
-        width={80}
-        height={80}
-        fallbackText="이미지 없음"
-      />
-    ),
-  },
-  {
-    title: "카테고리",
-    dataIndex: "category",
-    key: "category",
-    width: 120,
-    render: (category: string) => (
-      <Tag color="blue">{getCategoryName(category)}</Tag>
-    ),
-  },
-  {
-    title: "재료",
-    dataIndex: "ingredients",
-    key: "ingredients",
-    width: 200,
-    ellipsis: true,
-  },
-  {
-    title: "설명",
-    dataIndex: "description",
-    key: "description",
-    width: 250,
-    ellipsis: true,
-  },
-  {
-    title: "가격",
-    dataIndex: "prices",
-    key: "prices",
-    width: 100,
-    render: (prices: any[]) => (
-      <div>
-        {prices.map((price, index) => (
-          <div key={index}>
-            {price.name === "STANDARD" ? "기본" : price.name}: ₩
-            {price.price.toLocaleString()}
-          </div>
-        ))}
-      </div>
-    ),
-  },
-  {
-    title: "베스트셀러",
-    dataIndex: "bestSeller",
-    key: "bestSeller",
-    width: 100,
-    render: (bestSeller: boolean) => (
-      <Tag color={bestSeller ? "red" : "default"}>
-        {bestSeller ? "베스트" : "일반"}
-      </Tag>
-    ),
-  },
-  {
-    title: "작업",
-    key: "action",
-    width: 120,
-    render: (_: any, record: TMenuItem) => (
-      <Space size="middle">
-        <Button
-          type="text"
-          icon={<EditOutlined />}
-          shape="circle"
-          title="수정"
-        />
-        <Button
-          type="text"
-          danger
-          icon={<DeleteOutlined />}
-          shape="circle"
-          title="삭제"
-        />
-      </Space>
-    ),
-  },
-];
-
 const adminPage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [selectedDish, setSelectedDish] = useState<TMenuItem | null>(null);
   const { dishes, loading, error, refetch } = useDishes();
 
   const {
@@ -168,6 +76,130 @@ const adminPage = () => {
   const handleCancel = () => {
     setIsModalOpen(false);
   };
+
+  const showEditModal = (dish: TMenuItem) => {
+    setSelectedDish(dish);
+    setIsEditModalOpen(true);
+  };
+
+  const handleEditOk = () => {
+    setIsEditModalOpen(false);
+    setSelectedDish(null);
+  };
+
+  const handleEditCancel = () => {
+    setIsEditModalOpen(false);
+    setSelectedDish(null);
+  };
+
+  const handleDishUpdate = (updatedDish: TMenuItem) => {
+    // 로컬 상태 업데이트 (실제로는 refetch를 호출하여 서버에서 최신 데이터를 가져옴)
+    message.success("메뉴가 성공적으로 수정되었습니다.");
+    refetch(); // 데이터를 다시 가져와서 UI 업데이트
+  };
+
+  const handleDelete = async (dish: TMenuItem) => {
+    // TODO: 삭제 기능 구현
+    message.info("삭제 기능은 아직 구현되지 않았습니다.");
+  };
+
+  const columns = [
+    {
+      title: "이름",
+      dataIndex: "name",
+      key: "name",
+      width: 200,
+    },
+    {
+      title: "이미지",
+      dataIndex: "imageUrl",
+      key: "imageUrl",
+      width: 120,
+      render: (imageUrl: string, record: TMenuItem) => (
+        <SafeImage
+          src={imageUrl || `/images/menu/menu_${record.id}.jpeg`}
+          alt={record.name}
+          width={80}
+          height={80}
+          fallbackText="이미지 없음"
+        />
+      ),
+    },
+    {
+      title: "카테고리",
+      dataIndex: "category",
+      key: "category",
+      width: 120,
+      render: (category: string) => (
+        <Tag color="blue">{getCategoryName(category)}</Tag>
+      ),
+    },
+    {
+      title: "재료",
+      dataIndex: "ingredients",
+      key: "ingredients",
+      width: 200,
+      ellipsis: true,
+    },
+    {
+      title: "설명",
+      dataIndex: "description",
+      key: "description",
+      width: 250,
+      ellipsis: true,
+    },
+    {
+      title: "가격",
+      dataIndex: "prices",
+      key: "prices",
+      width: 100,
+      render: (prices: any[]) => (
+        <div>
+          {prices.map((price, index) => (
+            <div key={index}>
+              {price.name === "STANDARD" ? "기본" : price.name}: ₩
+              {price.price.toLocaleString()}
+            </div>
+          ))}
+        </div>
+      ),
+    },
+    {
+      title: "베스트셀러",
+      dataIndex: "bestSeller",
+      key: "bestSeller",
+      width: 100,
+      render: (bestSeller: boolean) => (
+        <Tag color={bestSeller ? "red" : "default"}>
+          {bestSeller ? "베스트" : "일반"}
+        </Tag>
+      ),
+    },
+    {
+      title: "작업",
+      key: "action",
+      width: 120,
+      render: (_: any, record: TMenuItem) => (
+        <Space size="middle">
+          <Button
+            type="text"
+            icon={<EditOutlined />}
+            shape="circle"
+            title="수정"
+            onClick={() => showEditModal(record)}
+          />
+          <Button
+            type="text"
+            danger
+            icon={<DeleteOutlined />}
+            shape="circle"
+            title="삭제"
+            onClick={() => handleDelete(record)}
+          />
+        </Space>
+      ),
+    },
+  ];
 
   if (loading) {
     return (
@@ -318,6 +350,14 @@ const adminPage = () => {
           isModalOpen={isModalOpen}
           handleOk={handleOk}
           handleCancel={handleCancel}
+        />
+
+        <EditDishModal
+          isModalOpen={isEditModalOpen}
+          handleOk={handleEditOk}
+          handleCancel={handleEditCancel}
+          dish={selectedDish}
+          onUpdate={handleDishUpdate}
         />
       </Content>
     </DishLayout>

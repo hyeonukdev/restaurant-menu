@@ -36,14 +36,35 @@ const DishSkeleton = () => (
 
 const Dish = () => {
   const router = useRouter();
-  const { id } = router.query;
+  const id = Array.isArray(router.query.id)
+    ? router.query.id[0]
+    : router.query.id;
+  const idForFetch = typeof id === "string" ? id : undefined;
 
-  const { dish, loading, error, refetch } = useDish(id as string);
+  const { dish, loading, error, refetch } = useDish(idForFetch);
 
   const { useToken } = theme;
   const { token } = useToken();
 
+  // 디버깅을 위한 로그
+  console.log("Dish component state:", {
+    id,
+    dish: dish
+      ? {
+          id: dish.id,
+          name: dish.name,
+          ingredients: dish.ingredients?.substring(0, 20) + "...",
+        }
+      : null,
+    loading,
+    error,
+    hasId: Boolean(id),
+    hasDish: Boolean(dish),
+  });
+
+  // dish 변경 감지
   useEffect(() => {
+    console.log("Dish useEffect triggered - dish changed:", dish);
     if (dish) {
       animate(
         ".cardDescriptionAnimation",
@@ -53,57 +74,20 @@ const Dish = () => {
     }
   }, [dish]);
 
-  if (loading) {
-    return (
-      <DishLayout
-        title="Loading..."
-        pageDescription="Loading dish information"
-        imageUrl="/images/og-image.png"
-      >
-        <Content>
-          <main>
-            <DishSkeleton />
-          </main>
-        </Content>
-      </DishLayout>
-    );
-  }
-
-  if (error || !dish) {
-    return (
-      <DishLayout
-        title="Error"
-        pageDescription="Failed to load dish information"
-        imageUrl="/images/og-image.png"
-      >
-        <Content>
-          <main>
-            <Alert
-              message="메뉴 정보 로딩 오류"
-              description={error || "메뉴를 찾을 수 없습니다."}
-              type="error"
-              showIcon
-              action={
-                <Button size="small" onClick={refetch}>
-                  다시 시도
-                </Button>
-              }
-              style={{ marginBottom: 16 }}
-            />
-            <Button onClick={() => router.push("/dishes")}>
-              메뉴 목록으로 돌아가기
-            </Button>
-          </main>
-        </Content>
-      </DishLayout>
-    );
-  }
+  // id가 없으면 아무것도 렌더링하지 않음
+  if (!idForFetch) return null;
 
   return (
     <DishLayout
-      title={dish?.name}
-      pageDescription={`Ingredients and description`}
-      imageUrl={dish.imageUrl || `/images/menu/menu_${dish.id}.jpeg`}
+      title={!dish ? "Loading..." : error ? "Error" : dish.name}
+      pageDescription={
+        !dish
+          ? "Loading dish information"
+          : error
+          ? "Failed to load dish information"
+          : "Ingredients and description"
+      }
+      imageUrl="/images/og-image.png"
     >
       <Content>
         <main>
@@ -114,7 +98,7 @@ const Dish = () => {
                 className={styles.image}
                 style={{ borderRadius: "0px" }}
                 alt="dish food"
-                src={dish.imageUrl || `/images/menu/menu_${dish.id}.jpeg`}
+                src={dish?.imageUrl || `/images/menu/menu_${id}.jpeg`}
                 width={400}
                 height={450}
                 fallbackText="이미지 없음"
@@ -122,25 +106,85 @@ const Dish = () => {
             }
           >
             <div className={styles.bodyCard}>
+              {/* 베스트셀러 태그 */}
               {dish?.bestSeller && (
                 <Tag className={styles.bestSellerTag} color={token.colorInfo}>
                   Best seller
                 </Tag>
               )}
+
+              {/* 메뉴명 */}
               <Title className={styles.dishName} level={3}>
-                {dish?.name}
+                {!dish ? (
+                  <Skeleton.Input
+                    active
+                    size="large"
+                    style={{ width: "80%" }}
+                  />
+                ) : error ? (
+                  <div
+                    style={{
+                      color: "#ff4d4f",
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "8px",
+                    }}
+                  >
+                    <span>⚠️</span>
+                    메뉴를 불러올 수 없습니다
+                  </div>
+                ) : (
+                  dish.name
+                )}
               </Title>
 
+              {/* 재료 */}
               <Text className={styles.subtitle}>Ingredients</Text>
               <Paragraph type="secondary" className={styles.paragraph}>
-                {dish?.ingredients}
+                {!dish ? (
+                  <Skeleton active paragraph={{ rows: 1 }} />
+                ) : error ? (
+                  <span style={{ color: "#999" }}>
+                    재료 정보를 불러올 수 없습니다
+                  </span>
+                ) : (
+                  dish.ingredients
+                )}
               </Paragraph>
 
+              {/* 설명 */}
               <Text className={styles.subtitle}>Description</Text>
               <Paragraph type="secondary" className={styles.paragraph}>
-                {dish?.description}
+                {!dish ? (
+                  <Skeleton active paragraph={{ rows: 2 }} />
+                ) : error ? (
+                  <span style={{ color: "#999" }}>
+                    설명을 불러올 수 없습니다
+                  </span>
+                ) : (
+                  dish.description
+                )}
               </Paragraph>
 
+              {/* 에러 시 재시도 버튼 */}
+              {error && (
+                <div style={{ marginTop: "16px", textAlign: "center" }}>
+                  <Alert
+                    message="메뉴 정보 로딩 오류"
+                    description={error}
+                    type="error"
+                    showIcon
+                    action={
+                      <Button size="small" onClick={refetch}>
+                        다시 시도
+                      </Button>
+                    }
+                    style={{ marginBottom: 16 }}
+                  />
+                </div>
+              )}
+
+              {/* 뒤로가기 버튼 */}
               <Tooltip title="Back to Menu">
                 <Button
                   onClick={() => router.push("/dishes")}
