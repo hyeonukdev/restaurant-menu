@@ -13,7 +13,7 @@ import {
 const { Title } = Typography;
 const { TextArea } = Input;
 import { useState } from "react";
-import { TMenuItem, PriceNameType } from "@/types/dish";
+import { TMenuItem } from "@/types/dish";
 import { ImageUpload } from "../ui/ImageUpload";
 
 interface EditDishModalProps {
@@ -46,16 +46,24 @@ export const EditDishModal = ({
   // 모달이 열릴 때 폼 초기값 설정
   const handleModalOpen = () => {
     if (dish) {
+      // 기존 이미지 URL 설정
       setImageUrl(dish.imageUrl || "");
+
       form.setFieldsValue({
         name: dish.name,
         ingredients: dish.ingredients,
         description: dish.description,
-        price: dish.prices[0]?.price || 0,
+        price: dish.price,
         bestSeller: dish.bestSeller,
         imageUrl: dish.imageUrl,
       });
     }
+  };
+
+  // 모달이 닫힐 때 상태 초기화
+  const handleModalClose = () => {
+    form.resetFields();
+    setImageUrl("");
   };
 
   const onFinish = async (values: any) => {
@@ -68,7 +76,7 @@ export const EditDishModal = ({
         name: values.name,
         ingredients: values.ingredients,
         description: values.description,
-        prices: [{ name: PriceNameType.STANDARD, price: values.price }],
+        price: values.price,
         bestSeller: values.bestSeller,
         imageUrl: imageUrl || values.imageUrl || "",
       };
@@ -88,14 +96,13 @@ export const EditDishModal = ({
 
       const result = await response.json();
 
-      if (result.success) {
+      if (result.message) {
         message.success("메뉴가 성공적으로 수정되었습니다.");
         onUpdate(updatedDish);
+        handleModalClose();
         handleOk();
-        form.resetFields();
-        setImageUrl("");
       } else {
-        throw new Error(result.message || "메뉴 수정에 실패했습니다.");
+        throw new Error(result.error || "메뉴 수정에 실패했습니다.");
       }
     } catch (error) {
       console.error("메뉴 수정 오류:", error);
@@ -113,8 +120,7 @@ export const EditDishModal = ({
   };
 
   const handleCancelClick = () => {
-    form.resetFields();
-    setImageUrl("");
+    handleModalClose();
     handleCancel();
   };
 
@@ -149,6 +155,8 @@ export const EditDishModal = ({
         afterOpenChange={(open) => {
           if (open) {
             handleModalOpen();
+          } else {
+            handleModalClose();
           }
         }}
       >

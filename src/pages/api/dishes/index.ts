@@ -18,7 +18,7 @@ export default async function handler(
         return res.status(500).json({ error: "Failed to fetch sections" });
       }
 
-      // 2. Get all section items with dishes and prices
+      // 2. Get all section items with dishes
       const { data: sectionItems, error: itemsError } = await supabase
         .from("section_items")
         .select(
@@ -32,6 +32,7 @@ export default async function handler(
             description,
             ingredients,
             image_url,
+            price,
             best_seller
           )
         `
@@ -43,17 +44,7 @@ export default async function handler(
         return res.status(500).json({ error: "Failed to fetch section items" });
       }
 
-      // 3. Get all prices
-      const { data: prices, error: pricesError } = await supabase
-        .from("prices")
-        .select("dish_id, name, price");
-
-      if (pricesError) {
-        console.error("Prices error:", pricesError);
-        return res.status(500).json({ error: "Failed to fetch prices" });
-      }
-
-      // 4. Transform data
+      // 3. Transform data
       const transformedData =
         sections?.map((section) => {
           // Get items for this section
@@ -66,21 +57,14 @@ export default async function handler(
               const dish = item.dishes;
               if (!dish) return null;
 
-              // Get prices for this dish
-              const dishPrices =
-                prices?.filter((price) => price.dish_id === dish.id) || [];
-
               return {
                 id: dish.id.toString(),
                 name: dish.name,
                 description: dish.description,
                 ingredients: dish.ingredients,
                 imageUrl: dish.image_url,
+                price: dish.price,
                 bestSeller: dish.best_seller,
-                prices: dishPrices.map((price) => ({
-                  name: price.name,
-                  price: price.price,
-                })),
               };
             })
             .filter(Boolean)
@@ -111,8 +95,118 @@ export default async function handler(
       console.error("API error:", error);
       res.status(500).json({ error: "Failed to fetch dishes" });
     }
+  } else if (req.method === "POST") {
+    try {
+      const {
+        name,
+        description,
+        ingredients,
+        imageUrl,
+        bestSeller,
+        price,
+        category,
+      } = req.body;
+
+      console.log("POST /api/dishes - Request body:", req.body);
+
+      // Validate required fields
+      if (!name || !price) {
+        return res.status(400).json({ error: "Name and price are required" });
+      }
+
+      // Get section ID by category name
+      const { data: section, error: sectionError } = await supabase
+        .from("sections")
+        .select("id")
+        .eq("name", category)
+        .single();
+
+      if (sectionError || !section) {
+        console.error("Section error:", sectionError);
+        return res.status(400).json({ error: "Invalid category" });
+      }
+
+      console.log("Found section:", section);
+
+      // Insert new dish
+      const { data: newDish, error: dishError } = await supabase
+        .from("dishes")
+        .insert({
+          name,
+          description: description || null,
+          ingredients: ingredients || null,
+          image_url: imageUrl || null,
+          price,
+          best_seller: bestSeller || false,
+        })
+        .select()
+        .single();
+
+      if (dishError) {
+        console.error("Supabase dish insert error:", dishError);
+        return res
+          .status(500)
+          .json({ error: "Failed to create dish", details: dishError.message });
+      }
+
+      console.log("Created dish:", newDish);
+
+      // Get the next order_index for this section
+      const { data: maxOrder, error: orderError } = await supabase
+        .from("section_items")
+        .select("order_index")
+        .eq("section_id", section.id)
+        .order("order_index", { ascending: false })
+        .limit(1)
+        .single();
+
+      const nextOrderIndex = maxOrder ? maxOrder.order_index + 1 : 0;
+
+      console.log("Next order index:", nextOrderIndex);
+
+      // Insert section item
+      const { error: sectionItemError } = await supabase
+        .from("section_items")
+        .insert({
+          section_id: section.id,
+          dish_id: newDish.id,
+          order_index: nextOrderIndex,
+        });
+
+      if (sectionItemError) {
+        console.error("Supabase section item insert error:", sectionItemError);
+        return res.status(500).json({
+          error: "Failed to create section item",
+          details: sectionItemError.message,
+        });
+      }
+
+      // Transform the response to match the expected format
+      const transformedDish = {
+        id: newDish.id.toString(),
+        name: newDish.name,
+        description: newDish.description,
+        ingredients: newDish.ingredients,
+        imageUrl: newDish.image_url,
+        price: newDish.price,
+        bestSeller: newDish.best_seller,
+      };
+
+      console.log("Transformed dish:", transformedDish);
+
+      res.status(201).json({
+        message: "Dish created successfully",
+        data: transformedDish,
+      });
+    } catch (error) {
+      console.error("API error:", error);
+      res.status(500).json({
+        error: "Failed to create dish",
+        details: error instanceof Error ? error.message : "Unknown error",
+      });
+    }
   } else {
-    res.setHeader("Allow", ["GET"]);
+    res.setHeader("Allow", ["GET", "POST"]);
     res.status(405).end(`Method ${req.method} Not Allowed`);
   }
 }

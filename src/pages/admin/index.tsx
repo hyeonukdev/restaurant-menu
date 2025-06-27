@@ -13,6 +13,7 @@ import {
   Tag,
   Spin,
   message,
+  Modal,
 } from "antd";
 const { Content } = Layout;
 const { Title } = Typography;
@@ -99,8 +100,62 @@ const adminPage = () => {
   };
 
   const handleDelete = async (dish: TMenuItem) => {
-    // TODO: 삭제 기능 구현
-    message.info("삭제 기능은 아직 구현되지 않았습니다.");
+    try {
+      // 확인 대화상자
+      Modal.confirm({
+        title: "메뉴 삭제 확인",
+        content: (
+          <div>
+            <p>"{dish.name}" 메뉴를 정말로 삭제하시겠습니까?</p>
+            <p style={{ color: "#ff4d4f", fontSize: "12px" }}>
+              ⚠️ 이 작업은 되돌릴 수 없습니다.
+            </p>
+          </div>
+        ),
+        okText: "삭제",
+        okType: "danger",
+        cancelText: "취소",
+        onOk: async () => {
+          try {
+            // API 호출
+            const response = await fetch(`/api/dishes/${dish.id}`, {
+              method: "DELETE",
+              headers: {
+                "Content-Type": "application/json",
+              },
+            });
+
+            if (!response.ok) {
+              const errorData = await response.json();
+              throw new Error(errorData.error || "메뉴 삭제에 실패했습니다.");
+            }
+
+            const result = await response.json();
+
+            if (result.message) {
+              message.success(
+                `"${dish.name}" 메뉴가 성공적으로 삭제되었습니다.`
+              );
+              refetch(); // 데이터를 다시 가져와서 UI 업데이트
+            } else {
+              throw new Error("메뉴 삭제에 실패했습니다.");
+            }
+          } catch (error) {
+            console.error("메뉴 삭제 오류:", error);
+            message.error(
+              error instanceof Error
+                ? error.message
+                : "메뉴 삭제에 실패했습니다."
+            );
+          }
+        },
+      });
+    } catch (error) {
+      console.error("메뉴 삭제 오류:", error);
+      message.error(
+        error instanceof Error ? error.message : "메뉴 삭제에 실패했습니다."
+      );
+    }
   };
 
   const columns = [
@@ -153,19 +208,10 @@ const adminPage = () => {
     },
     {
       title: "가격",
-      dataIndex: "prices",
-      key: "prices",
+      dataIndex: "price",
+      key: "price",
       width: 100,
-      render: (prices: any[]) => (
-        <div>
-          {prices.map((price, index) => (
-            <div key={index}>
-              {price.name === "STANDARD" ? "기본" : price.name}: ₩
-              {price.price.toLocaleString()}
-            </div>
-          ))}
-        </div>
-      ),
+      render: (price: number) => <div>₩{price.toLocaleString()}</div>,
     },
     {
       title: "베스트셀러",
@@ -353,6 +399,7 @@ const adminPage = () => {
           isModalOpen={isModalOpen}
           handleOk={handleOk}
           handleCancel={handleCancel}
+          onDishAdded={refetch}
         />
 
         <EditDishModal

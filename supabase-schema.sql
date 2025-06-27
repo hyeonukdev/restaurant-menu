@@ -23,7 +23,6 @@ CREATE TABLE dishes (
 CREATE TABLE prices (
   id SERIAL PRIMARY KEY,
   dish_id INTEGER REFERENCES dishes(id) ON DELETE CASCADE,
-  name VARCHAR(100) NOT NULL,
   price INTEGER NOT NULL,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL
 );
@@ -58,11 +57,11 @@ INSERT INTO dishes (name, description, ingredients, image_url, best_seller) VALU
   ('아메리카노', '깊고 진한 에스프레소의 맛', '에스프레소, 물', '/images/menu/menu_2.jpeg', false),
   ('라떼', '부드러운 우유와 에스프레소의 조화', '에스프레소, 우유', '/images/menu/menu_4.jpeg', false);
 
-INSERT INTO prices (dish_id, name, price) VALUES
-  (1, 'STANDARD', 15000),
-  (2, 'STANDARD', 12000),
-  (3, 'STANDARD', 4500),
-  (4, 'STANDARD', 5500);
+INSERT INTO prices (dish_id, price) VALUES
+  (1, 15000),
+  (2, 12000),
+  (3, 4500),
+  (4, 5500);
 
 INSERT INTO section_items (section_id, dish_id, order_index) VALUES
   (1, 1, 1),

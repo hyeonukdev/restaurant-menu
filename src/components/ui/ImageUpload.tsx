@@ -1,11 +1,14 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   UploadOutlined,
   DeleteOutlined,
   PictureOutlined,
+  ReloadOutlined,
 } from "@ant-design/icons";
-import { Button, Spin } from "antd";
+import { Button, Spin, Space, Typography } from "antd";
 import { supabase } from "../../lib/supabase";
+
+const { Text } = Typography;
 
 interface ImageUploadProps {
   currentImageUrl?: string;
@@ -24,6 +27,15 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
   const [previewUrl, setPreviewUrl] = useState<string | null>(
     currentImageUrl || null
   );
+  const [isNewImage, setIsNewImage] = useState(false);
+
+  // currentImageUrl이 변경될 때 previewUrl 업데이트
+  useEffect(() => {
+    if (currentImageUrl) {
+      setPreviewUrl(currentImageUrl);
+      setIsNewImage(false);
+    }
+  }, [currentImageUrl]);
 
   const handleFileUpload = async (
     event: React.ChangeEvent<HTMLInputElement>
@@ -66,6 +78,7 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
       } = supabase.storage.from("menu-images").getPublicUrl(filePath);
 
       setPreviewUrl(publicUrl);
+      setIsNewImage(true);
       onImageUpload(publicUrl);
     } catch (error) {
       console.error("Upload error:", error);
@@ -77,7 +90,16 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
 
   const handleRemoveImage = () => {
     setPreviewUrl(null);
+    setIsNewImage(false);
     onImageRemove();
+  };
+
+  const handleKeepOriginal = () => {
+    if (currentImageUrl) {
+      setPreviewUrl(currentImageUrl);
+      setIsNewImage(false);
+      onImageUpload(currentImageUrl);
+    }
   };
 
   return (
@@ -96,20 +118,65 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
               border: "1px solid #d9d9d9",
             }}
           />
-          <Button
-            type="text"
-            icon={<DeleteOutlined />}
-            onClick={handleRemoveImage}
-            disabled={disabled}
+
+          {/* 이미지 상태 표시 */}
+          <div
+            style={{
+              position: "absolute",
+              top: 8,
+              left: 8,
+              background: isNewImage
+                ? "rgba(0, 128, 0, 0.8)"
+                : "rgba(0, 0, 255, 0.8)",
+              color: "white",
+              padding: "4px 8px",
+              borderRadius: "4px",
+              fontSize: "12px",
+              fontWeight: "bold",
+            }}
+          >
+            {isNewImage ? "새 이미지" : "기존 이미지"}
+          </div>
+
+          {/* 액션 버튼들 */}
+          <div
             style={{
               position: "absolute",
               top: 8,
               right: 8,
-              background: "rgba(255, 0, 0, 0.8)",
-              color: "white",
-              border: "none",
+              display: "flex",
+              gap: "4px",
             }}
-          />
+          >
+            {/* 새 이미지가 있을 때만 원본 유지 버튼 표시 */}
+            {isNewImage && currentImageUrl && (
+              <Button
+                type="text"
+                icon={<ReloadOutlined />}
+                onClick={handleKeepOriginal}
+                disabled={disabled}
+                style={{
+                  background: "rgba(0, 0, 255, 0.8)",
+                  color: "white",
+                  border: "none",
+                }}
+                title="원본 이미지 유지"
+              />
+            )}
+
+            <Button
+              type="text"
+              icon={<DeleteOutlined />}
+              onClick={handleRemoveImage}
+              disabled={disabled}
+              style={{
+                background: "rgba(255, 0, 0, 0.8)",
+                color: "white",
+                border: "none",
+              }}
+              title="이미지 제거"
+            />
+          </div>
         </div>
       )}
 
@@ -155,6 +222,39 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
               PNG, JPG, GIF (최대 5MB)
             </div>
           </label>
+        </div>
+      )}
+
+      {/* 기존 이미지가 있을 때 교체 버튼 */}
+      {previewUrl && !isNewImage && (
+        <div style={{ marginTop: 8 }}>
+          <input
+            type="file"
+            accept="image/*"
+            onChange={handleFileUpload}
+            disabled={disabled || uploading}
+            style={{ display: "none" }}
+            id="image-replace"
+          />
+          <Button
+            icon={<UploadOutlined />}
+            disabled={disabled || uploading}
+            loading={uploading}
+            style={{ marginRight: 8 }}
+            onClick={() => {
+              const fileInput = document.getElementById(
+                "image-replace"
+              ) as HTMLInputElement;
+              if (fileInput) {
+                fileInput.click();
+              }
+            }}
+          >
+            이미지 교체
+          </Button>
+          <Text type="secondary" style={{ fontSize: "12px" }}>
+            기존 이미지를 다른 이미지로 교체할 수 있습니다.
+          </Text>
         </div>
       )}
     </div>

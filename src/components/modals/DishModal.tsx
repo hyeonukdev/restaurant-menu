@@ -8,37 +8,97 @@ import {
   Typography,
   Switch,
   InputNumber,
+  message,
 } from "antd";
 const { Title } = Typography;
 const { TextArea } = Input;
+import { useState } from "react";
+import { ImageUpload } from "../ui/ImageUpload";
 
 interface DishModalProps {
   isModalOpen: boolean;
   handleOk: () => void;
   handleCancel: () => void;
+  onDishAdded: () => void;
 }
 
 export const DishModal = ({
   isModalOpen,
   handleOk,
   handleCancel,
+  onDishAdded,
 }: DishModalProps) => {
   const [form] = Form.useForm();
+  const [loading, setLoading] = useState(false);
+  const [imageUrl, setImageUrl] = useState<string>("");
 
-  const onFinish = (values: any) => {
-    console.log("Success:", values);
-    // TODO: API 호출로 메뉴 추가
-    handleOk();
-    form.resetFields();
+  const onFinish = async (values: any) => {
+    setLoading(true);
+    try {
+      const newDish = {
+        name: values.name,
+        ingredients: values.ingredients || "",
+        description: values.description || "",
+        price: values.price,
+        bestSeller: values.bestSeller || false,
+        imageUrl: imageUrl || "",
+        category: values.category,
+      };
+
+      // API 호출
+      const response = await fetch("/api/dishes", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(newDish),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "메뉴 추가에 실패했습니다.");
+      }
+
+      const result = await response.json();
+
+      if (result.message) {
+        message.success("메뉴가 성공적으로 추가되었습니다.");
+        onDishAdded();
+        handleOk();
+        form.resetFields();
+        setImageUrl("");
+      } else {
+        throw new Error(result.error || "메뉴 추가에 실패했습니다.");
+      }
+    } catch (error) {
+      console.error("메뉴 추가 오류:", error);
+      message.error(
+        error instanceof Error ? error.message : "메뉴 추가에 실패했습니다."
+      );
+    } finally {
+      setLoading(false);
+    }
   };
 
   const onFinishFailed = (errorInfo: any) => {
     console.log("Failed:", errorInfo);
+    message.error("폼 입력을 확인해주세요.");
   };
 
   const handleCancelClick = () => {
     form.resetFields();
+    setImageUrl("");
     handleCancel();
+  };
+
+  const handleImageUpload = (url: string) => {
+    setImageUrl(url);
+    form.setFieldValue("imageUrl", url);
+  };
+
+  const handleImageRemove = () => {
+    setImageUrl("");
+    form.setFieldValue("imageUrl", "");
   };
 
   const categoryOptions = [
@@ -91,20 +151,23 @@ export const DishModal = ({
           <Form.Item
             label="재료"
             name="ingredients"
-            rules={[{ required: true, message: "재료를 입력하세요" }]}
+            rules={[{ required: false, message: "재료를 입력하세요" }]}
           >
             <TextArea
               rows={2}
-              placeholder="재료를 입력하세요 (예: 감자, 버섯, 치즈)"
+              placeholder="재료를 입력하세요 (선택사항, 예: 감자, 버섯, 치즈)"
             />
           </Form.Item>
 
           <Form.Item
             label="설명"
             name="description"
-            rules={[{ required: true, message: "설명을 입력하세요" }]}
+            rules={[{ required: false, message: "설명을 입력하세요" }]}
           >
-            <TextArea rows={3} placeholder="메뉴에 대한 설명을 입력하세요" />
+            <TextArea
+              rows={3}
+              placeholder="메뉴에 대한 설명을 입력하세요 (선택사항)"
+            />
           </Form.Item>
 
           <Form.Item
@@ -143,11 +206,16 @@ export const DishModal = ({
           </Form.Item>
 
           <Form.Item
-            label="이미지 URL"
+            label="이미지"
             name="imageUrl"
-            rules={[{ required: false, message: "이미지 URL을 입력하세요" }]}
+            rules={[{ required: false, message: "이미지를 업로드하세요" }]}
           >
-            <Input placeholder="이미지 URL을 입력하세요 (선택사항)" />
+            <ImageUpload
+              currentImageUrl={imageUrl}
+              onImageUpload={handleImageUpload}
+              onImageRemove={handleImageRemove}
+              disabled={loading}
+            />
           </Form.Item>
 
           <div
@@ -164,10 +232,11 @@ export const DishModal = ({
               onClick={handleCancelClick}
               htmlType="reset"
               style={{ marginRight: "10px" }}
+              disabled={loading}
             >
               취소
             </Button>
-            <Button type="primary" htmlType="submit">
+            <Button type="primary" htmlType="submit" loading={loading}>
               추가
             </Button>
           </div>

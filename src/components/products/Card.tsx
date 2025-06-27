@@ -6,7 +6,7 @@ import { Button, Card, theme, Typography, Tag, Tooltip, Skeleton } from "antd";
 const { Title, Paragraph } = Typography;
 import { ArrowRightOutlined } from "@ant-design/icons";
 
-import { PriceNameType, TMenuItem, TPriceOption } from "@/types/dish";
+import { TMenuItem } from "@/types/dish";
 import { SafeImage } from "@/components/ui";
 import styles from "../../styles/dishCard.module.css";
 
@@ -14,7 +14,7 @@ export const PlateCard = ({
   id,
   name,
   description,
-  prices,
+  price,
   imageUrl,
   bestSeller,
   index,
@@ -27,16 +27,6 @@ export const PlateCard = ({
   const handleDetailsClick = (event: React.MouseEvent) => {
     event.stopPropagation();
     router.push(`/dishes/${id}`);
-  };
-
-  const handlePriceName = (name: string) => {
-    switch (name) {
-      case PriceNameType.STANDARD:
-        return "";
-
-      default:
-        return `${name.charAt(0).toUpperCase() + name.slice(1)}: `;
-    }
   };
 
   return (
@@ -81,12 +71,9 @@ export const PlateCard = ({
         <Title level={3}>{name}</Title>
 
         <div className={styles.pricesContainer}>
-          {prices.map(({ name, price }: TPriceOption, idx) => (
-            <Paragraph key={`${name}-${price}-${idx}`}>
-              {handlePriceName(name)}
-              <span style={{ color: token.colorTextSecondary }}>₩{price}</span>
-            </Paragraph>
-          ))}
+          <Paragraph>
+            <span style={{ color: token.colorTextSecondary }}>₩{price}</span>
+          </Paragraph>
         </div>
         <Paragraph className={styles.description} type="secondary">
           {description}

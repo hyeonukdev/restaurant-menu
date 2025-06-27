@@ -6,7 +6,9 @@ import { menuOptions } from "@/utils/menuOptions";
 import styles from "../../styles/sidebar.module.css";
 
 export const MenuItems = ({ isDrawerOpen, setOpenDrawer }: any) => {
-  const [currentSection, setCurrentSection] = useState(menuOptions[0].key);
+  const [currentSection, setCurrentSection] = useState<string | null>(
+    menuOptions[0]?.key || null
+  );
   const {
     token: { colorBgContainer },
   } = theme.useToken();
@@ -19,7 +21,7 @@ export const MenuItems = ({ isDrawerOpen, setOpenDrawer }: any) => {
       const sections = document.querySelectorAll("section");
 
       // Determine the current section in view
-      let newCurrentSection = null;
+      let newCurrentSection: string | null = null;
       sections.forEach((section) => {
         const rect = section.getBoundingClientRect();
         if (rect.top <= 300 && rect.bottom >= 10) {
@@ -50,7 +52,7 @@ export const MenuItems = ({ isDrawerOpen, setOpenDrawer }: any) => {
       <Menu
         className={styles.menuContainer}
         mode="inline"
-        selectedKeys={[currentSection]}
+        selectedKeys={currentSection ? [currentSection] : []}
         onClick={handleMenuClick}
         items={menuOptions.map((option) => ({
           key: option.key,
