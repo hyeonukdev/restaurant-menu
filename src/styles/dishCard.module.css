@@ -6,7 +6,7 @@
 .image {
   object-fit: cover;
   width: 100% !important;
-  height: 200px !important;
+  aspect-ratio: 3/2;
   display: block;
 }
 
@@ -19,7 +19,7 @@
 
   .image {
     width: 100% !important;
-    height: 180px !important;
+    aspect-ratio: 3/2;
     object-fit: cover;
   }
 }
@@ -27,7 +27,7 @@
 /* 작은 모바일 화면 */
 @media (max-width: 480px) {
   .image {
-    height: 160px !important;
+    aspect-ratio: 3/2;
   }
 }
 

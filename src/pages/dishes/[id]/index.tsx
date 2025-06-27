@@ -98,12 +98,13 @@ const Dish = () => {
                 className={styles.image}
                 style={{ borderRadius: "0px" }}
                 alt="dish food"
-                src={dish?.imageUrl || `/images/menu/menu_${id}.jpeg`}
+                src={dish?.imageUrl || ""}
                 width={400}
                 height={300}
                 fallbackText=""
                 showIcon={false}
                 backgroundImage="/images/placeholder.svg"
+                priority={true}
               />
             }
           >

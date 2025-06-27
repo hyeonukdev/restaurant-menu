@@ -14,6 +14,7 @@ const { Title } = Typography;
 const { TextArea } = Input;
 import { useState } from "react";
 import { TMenuItem, PriceNameType } from "@/types/dish";
+import { ImageUpload } from "../ui/ImageUpload";
 
 interface EditDishModalProps {
   isModalOpen: boolean;
@@ -32,6 +33,7 @@ export const EditDishModal = ({
 }: EditDishModalProps) => {
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
+  const [imageUrl, setImageUrl] = useState<string>(dish?.imageUrl || "");
 
   const categoryOptions = [
     { value: "Dishes", label: "메인 요리" },
@@ -44,6 +46,7 @@ export const EditDishModal = ({
   // 모달이 열릴 때 폼 초기값 설정
   const handleModalOpen = () => {
     if (dish) {
+      setImageUrl(dish.imageUrl || "");
       form.setFieldsValue({
         name: dish.name,
         ingredients: dish.ingredients,
@@ -67,7 +70,7 @@ export const EditDishModal = ({
         description: values.description,
         prices: [{ name: PriceNameType.STANDARD, price: values.price }],
         bestSeller: values.bestSeller,
-        imageUrl: values.imageUrl || "",
+        imageUrl: imageUrl || values.imageUrl || "",
       };
 
       // API 호출
@@ -90,6 +93,7 @@ export const EditDishModal = ({
         onUpdate(updatedDish);
         handleOk();
         form.resetFields();
+        setImageUrl("");
       } else {
         throw new Error(result.message || "메뉴 수정에 실패했습니다.");
       }
@@ -110,7 +114,18 @@ export const EditDishModal = ({
 
   const handleCancelClick = () => {
     form.resetFields();
+    setImageUrl("");
     handleCancel();
+  };
+
+  const handleImageUpload = (url: string) => {
+    setImageUrl(url);
+    form.setFieldValue("imageUrl", url);
+  };
+
+  const handleImageRemove = () => {
+    setImageUrl("");
+    form.setFieldValue("imageUrl", "");
   };
 
   return (
@@ -130,7 +145,7 @@ export const EditDishModal = ({
         footer={[]}
         onCancel={handleCancelClick}
         closable={false}
-        width={600}
+        width={700}
         afterOpenChange={(open) => {
           if (open) {
             handleModalOpen();
@@ -144,7 +159,7 @@ export const EditDishModal = ({
           name="editDishForm"
           labelCol={{ span: 6 }}
           wrapperCol={{ span: 18 }}
-          style={{ maxWidth: 600 }}
+          style={{ maxWidth: 700 }}
           onFinish={onFinish}
           onFinishFailed={onFinishFailed}
           autoComplete="off"
@@ -198,11 +213,16 @@ export const EditDishModal = ({
           </Form.Item>
 
           <Form.Item
-            label="이미지 URL"
+            label="이미지"
             name="imageUrl"
-            rules={[{ required: false, message: "이미지 URL을 입력하세요" }]}
+            rules={[{ required: false, message: "이미지를 업로드하세요" }]}
           >
-            <Input placeholder="이미지 URL을 입력하세요 (선택사항)" />
+            <ImageUpload
+              currentImageUrl={imageUrl}
+              onImageUpload={handleImageUpload}
+              onImageRemove={handleImageRemove}
+              disabled={loading}
+            />
           </Form.Item>
 
           <div

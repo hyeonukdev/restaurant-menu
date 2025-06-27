@@ -28,6 +28,7 @@ interface SafeImageProps {
   showIcon?: boolean;
   hideOnError?: boolean;
   backgroundImage?: string;
+  priority?: boolean;
 }
 
 export const SafeImage: React.FC<SafeImageProps> = ({
@@ -41,9 +42,18 @@ export const SafeImage: React.FC<SafeImageProps> = ({
   showIcon = true,
   hideOnError = false,
   backgroundImage,
+  priority,
 }) => {
   const [imageError, setImageError] = useState(false);
   const [imageLoading, setImageLoading] = useState(true);
+
+  // src가 비어있거나 유효하지 않으면 바로 플레이스홀더 표시
+  const isValidSrc =
+    src &&
+    src.trim() !== "" &&
+    !src.includes("menu_") &&
+    src !== "/images/menu/" &&
+    !src.startsWith("/images/menu/menu_");
 
   const handleImageError = () => {
     setImageError(true);
@@ -55,7 +65,7 @@ export const SafeImage: React.FC<SafeImageProps> = ({
   };
 
   // 이미지가 없거나 에러가 발생한 경우
-  if (!src || imageError) {
+  if (!isValidSrc || imageError) {
     // hideOnError가 true면 아무것도 표시하지 않음
     if (hideOnError) {
       return null;
@@ -154,7 +164,6 @@ export const SafeImage: React.FC<SafeImageProps> = ({
           opacity: imageLoading ? 0 : 1,
           transition: "opacity 0.3s ease",
           width: "100%",
-          height: "100%",
           ...style,
         }}
         src={src}
@@ -164,6 +173,7 @@ export const SafeImage: React.FC<SafeImageProps> = ({
         onError={handleImageError}
         onLoad={handleImageLoad}
         unoptimized={true}
+        priority={priority}
       />
     </div>
   );

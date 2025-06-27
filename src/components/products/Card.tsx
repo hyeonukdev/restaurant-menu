@@ -7,7 +7,6 @@ const { Title, Paragraph } = Typography;
 import { ArrowRightOutlined } from "@ant-design/icons";
 
 import { PriceNameType, TMenuItem, TPriceOption } from "@/types/dish";
-import { getMenuImageUrl } from "@/../database/dishes";
 import { SafeImage } from "@/components/ui";
 import styles from "../../styles/dishCard.module.css";
 
@@ -18,7 +17,8 @@ export const PlateCard = ({
   prices,
   imageUrl,
   bestSeller,
-}: TMenuItem) => {
+  index,
+}: TMenuItem & { index?: number }) => {
   const router = useRouter();
 
   const { useToken } = theme;
@@ -47,12 +47,13 @@ export const PlateCard = ({
           <SafeImage
             className={styles.image}
             alt="dish food"
-            src={imageUrl || getMenuImageUrl(id)}
+            src={imageUrl}
             width={300}
             height={200}
             fallbackText=""
             showIcon={false}
             hideOnError={true}
+            priority={bestSeller || index === 0}
           />
           {bestSeller && (
             <Tag

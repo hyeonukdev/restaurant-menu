@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/router";
+import Image from "next/image";
 
 import { animate } from "motion";
 import { Button, Spin, Alert, Skeleton, Card } from "antd";
@@ -138,10 +139,25 @@ const HomePage = () => {
             />
           )}
 
-          <img
+          <Image
             className={styles.img}
             src={currentRestaurant.images.homeLayoutImage}
             alt="restaurant dish"
+            width={1920}
+            height={1080}
+            priority
+            sizes="100vw"
+            style={{
+              filter: "brightness(0.5)",
+              height: "100vh",
+              objectFit: "cover",
+              position: "fixed",
+              top: 0,
+              left: 0,
+              width: "100%",
+              maxWidth: "100vw",
+              zIndex: 0,
+            }}
           />
 
           <div ref={animationRef} style={{ opacity: 0 }}>

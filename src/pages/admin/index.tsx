@@ -117,13 +117,14 @@ const adminPage = () => {
       width: 120,
       render: (imageUrl: string, record: TMenuItem) => (
         <SafeImage
-          src={imageUrl || `/images/menu/menu_${record.id}.jpeg`}
+          src={imageUrl || ""}
           alt={record.name}
           width={80}
           height={80}
           fallbackText=""
           showIcon={false}
           hideOnError={true}
+          priority={record.bestSeller}
         />
       ),
     },

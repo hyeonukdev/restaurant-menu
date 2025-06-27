@@ -145,8 +145,8 @@ const Dishes = () => {
 
                 <span className={styles.cardsContainer}>
                   {section?.items && section.items.length > 0 ? (
-                    section.items.map((item) => (
-                      <PlateCard key={item.id} {...item} />
+                    section.items.map((item, index) => (
+                      <PlateCard key={item.id} {...item} index={index} />
                     ))
                   ) : (
                     <div className={styles.preparingMessage}>준비중...</div>

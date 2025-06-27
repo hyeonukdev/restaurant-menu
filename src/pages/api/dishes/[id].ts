@@ -1,104 +1,120 @@
-import { getDishById, getMenuImageUrl, updateDish } from "@/../database/dishes";
+import { NextApiRequest, NextApiResponse } from "next";
+import { supabase } from "../../../lib/supabase";
 
-export default function handler(req, res) {
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse
+) {
+  const { id } = req.query;
+
   if (req.method === "GET") {
-    const { id } = req.query;
-
-    console.log("API: Fetching dish with ID:", id);
-
-    if (!id || typeof id !== "string") {
-      console.log("API: Invalid dish ID");
-      return res.status(400).json({
-        message: "Invalid dish ID",
-        data: null,
-      });
-    }
-
-    const dish = getDishById(id);
-
-    if (!dish) {
-      console.log("API: Dish not found for ID:", id);
-      return res.status(404).json({
-        message: "Dish not found",
-        data: null,
-      });
-    }
-
-    console.log("API: Found dish:", dish.name);
-
-    // 캐싱 헤더 설정
-    res.setHeader("Cache-Control", "public, max-age=300, s-maxage=300"); // 5분 캐시
-    res.setHeader("ETag", `"dish-${id}-${Date.now()}"`); // ETag 추가
-
-    const responseData = {
-      ...dish,
-      imageUrl: getMenuImageUrl(dish.id),
-    };
-
-    console.log("API: Sending response:", responseData);
-
-    res.status(200).json({
-      message: "Dish information retrieved successfully",
-      data: responseData,
-    });
-  } else if (req.method === "PUT") {
-    const { id } = req.query;
-
-    if (!id || typeof id !== "string") {
-      return res.status(400).json({
-        success: false,
-        message: "Invalid dish ID",
-      });
-    }
-
     try {
-      const updatedDish = req.body;
+      // Get dish by ID
+      const { data: dish, error: dishError } = await supabase
+        .from("dishes")
+        .select("id, name, description, ingredients, image_url, best_seller")
+        .eq("id", id)
+        .single();
 
-      if (!updatedDish) {
-        return res.status(400).json({
-          success: false,
-          message: "Request body is required",
-        });
+      if (dishError) {
+        console.error("Supabase dish error:", dishError);
+        if (dishError.code === "PGRST116") {
+          return res.status(404).json({ error: "Dish not found" });
+        }
+        return res.status(500).json({ error: "Failed to fetch dish" });
       }
 
-      // 필수 필드 검증
-      const requiredFields = [
-        "name",
-        "ingredients",
-        "description",
-        "prices",
-        "bestSeller",
-      ];
-      for (const field of requiredFields) {
-        if (!(field in updatedDish)) {
-          return res.status(400).json({
-            success: false,
-            message: `Missing required field: ${field}`,
-          });
+      if (!dish) {
+        return res.status(404).json({ error: "Dish not found" });
+      }
+
+      // Get prices for this dish
+      const { data: prices, error: pricesError } = await supabase
+        .from("prices")
+        .select("id, name, price")
+        .eq("dish_id", id);
+
+      if (pricesError) {
+        console.error("Supabase prices error:", pricesError);
+        return res.status(500).json({ error: "Failed to fetch prices" });
+      }
+
+      // Transform data to match the expected format
+      const transformedDish = {
+        id: dish.id.toString(),
+        name: dish.name,
+        description: dish.description,
+        ingredients: dish.ingredients,
+        imageUrl: dish.image_url,
+        bestSeller: dish.best_seller,
+        prices:
+          prices?.map((price: any) => ({
+            name: price.name,
+            price: price.price,
+          })) || [],
+      };
+
+      res.status(200).json({
+        message: "Dish information retrieved successfully",
+        data: transformedDish,
+      });
+    } catch (error) {
+      console.error("API error:", error);
+      res.status(500).json({ error: "Failed to fetch dish" });
+    }
+  } else if (req.method === "PUT") {
+    try {
+      const { name, description, ingredients, imageUrl, bestSeller, prices } =
+        req.body;
+
+      // Update dish
+      const { data: updatedDish, error: dishError } = await supabase
+        .from("dishes")
+        .update({
+          name,
+          description,
+          ingredients,
+          image_url: imageUrl,
+          best_seller: bestSeller,
+        })
+        .eq("id", id)
+        .select()
+        .single();
+
+      if (dishError) {
+        console.error("Supabase dish update error:", dishError);
+        return res.status(500).json({ error: "Failed to update dish" });
+      }
+
+      // Update prices if provided
+      if (prices && Array.isArray(prices)) {
+        // Delete existing prices
+        await supabase.from("prices").delete().eq("dish_id", id);
+
+        // Insert new prices
+        if (prices.length > 0) {
+          const { error: pricesError } = await supabase.from("prices").insert(
+            prices.map((price: any) => ({
+              dish_id: id,
+              name: price.name,
+              price: price.price,
+            }))
+          );
+
+          if (pricesError) {
+            console.error("Supabase prices update error:", pricesError);
+            return res.status(500).json({ error: "Failed to update prices" });
+          }
         }
       }
 
-      // 메뉴 업데이트
-      const result = updateDish(id, updatedDish);
-
-      if (!result) {
-        return res.status(404).json({
-          success: false,
-          message: "Dish not found",
-        });
-      }
-
       res.status(200).json({
-        success: true,
         message: "Dish updated successfully",
-        data: result,
+        data: updatedDish,
       });
     } catch (error) {
-      console.error("Error updating dish:", error);
-      res.status(500).json({
-        success: false,
-        message: "Internal server error",
-      });
+      console.error("API error:", error);
+      res.status(500).json({ error: "Failed to update dish" });
     }
   } else {
     res.setHeader("Allow", ["GET", "PUT"]);
