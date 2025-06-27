@@ -163,19 +163,20 @@ const adminPage = () => {
       title: "이름",
       dataIndex: "name",
       key: "name",
-      width: 200,
+      width: 150,
+      ellipsis: true,
     },
     {
       title: "이미지",
       dataIndex: "imageUrl",
       key: "imageUrl",
-      width: 120,
+      width: 80,
       render: (imageUrl: string, record: TMenuItem) => (
         <SafeImage
           src={imageUrl || ""}
           alt={record.name}
-          width={80}
-          height={80}
+          width={60}
+          height={60}
           fallbackText=""
           showIcon={false}
           hideOnError={true}
@@ -187,7 +188,7 @@ const adminPage = () => {
       title: "카테고리",
       dataIndex: "category",
       key: "category",
-      width: 120,
+      width: 100,
       render: (category: string) => (
         <Tag color="blue">{getCategoryName(category)}</Tag>
       ),
@@ -196,28 +197,28 @@ const adminPage = () => {
       title: "재료",
       dataIndex: "ingredients",
       key: "ingredients",
-      width: 200,
+      width: 180,
       ellipsis: true,
     },
     {
       title: "설명",
       dataIndex: "description",
       key: "description",
-      width: 250,
+      width: 200,
       ellipsis: true,
     },
     {
       title: "가격",
       dataIndex: "price",
       key: "price",
-      width: 100,
+      width: 80,
       render: (price: number) => <div>₩{price.toLocaleString()}</div>,
     },
     {
       title: "베스트셀러",
       dataIndex: "bestSeller",
       key: "bestSeller",
-      width: 100,
+      width: 80,
       render: (bestSeller: boolean) => (
         <Tag color={bestSeller ? "red" : "default"}>
           {bestSeller ? "베스트" : "일반"}
@@ -227,13 +228,14 @@ const adminPage = () => {
     {
       title: "작업",
       key: "action",
-      width: 120,
+      width: 80,
       render: (_: any, record: TMenuItem) => (
-        <Space size="middle">
+        <Space size="small">
           <Button
             type="text"
             icon={<EditOutlined />}
             shape="circle"
+            size="small"
             title="수정"
             onClick={() => showEditModal(record)}
           />
@@ -242,6 +244,7 @@ const adminPage = () => {
             danger
             icon={<DeleteOutlined />}
             shape="circle"
+            size="small"
             title="삭제"
             onClick={() => handleDelete(record)}
           />
@@ -314,7 +317,7 @@ const adminPage = () => {
     >
       <Content
         style={{
-          padding: "0px 24px",
+          padding: "0px 16px",
           borderRadius: "10px",
         }}
       >
@@ -348,7 +351,7 @@ const adminPage = () => {
               관리자 페이지
             </Title>
 
-            <Card style={{ width: "100%", maxWidth: "1400px" }}>
+            <Card style={{ width: "100%", maxWidth: "1200px" }}>
               <div
                 style={{
                   display: "flex",
@@ -382,7 +385,7 @@ const adminPage = () => {
                 columns={columns}
                 dataSource={allMenuItems}
                 rowKey="id"
-                scroll={{ x: 1200, y: 600 }}
+                style={{ fontSize: "12px" }}
                 pagination={{
                   pageSize: 10,
                   showSizeChanger: true,
