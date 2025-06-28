@@ -122,15 +122,8 @@ const HomePage = () => {
   }, []);
 
   const scrollToTop = () => {
-    // 부드러운 스크롤 애니메이션
-    const scrollStep = -window.scrollY / (500 / 15);
-    const scrollInterval = setInterval(() => {
-      if (window.scrollY !== 0) {
-        window.scrollBy(0, scrollStep);
-      } else {
-        clearInterval(scrollInterval);
-      }
-    }, 15);
+    // 바로 맨 위로 스크롤
+    window.scrollTo(0, 0);
   };
 
   return (
