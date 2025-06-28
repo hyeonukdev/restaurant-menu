@@ -14,6 +14,7 @@ import {
   Spin,
   message,
   Modal,
+  Tabs,
 } from "antd";
 const { Content } = Layout;
 const { Title } = Typography;
@@ -50,18 +51,12 @@ const flattenMenuItems = (sections: any[]): TMenuItem[] => {
   );
 };
 
-const adminPage = () => {
+// 메뉴 관리 컴포넌트
+const MenuManagement = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [selectedDish, setSelectedDish] = useState<TMenuItem | null>(null);
   const { dishes, loading, error, refetch } = useDishes();
-
-  const {
-    token: { colorBgContainer },
-  } = theme.useToken();
-
-  const { useToken } = theme;
-  const { token } = useToken();
 
   // 모든 메뉴 아이템을 평면화
   const allMenuItems = dishes ? flattenMenuItems(dishes) : [];
@@ -94,14 +89,12 @@ const adminPage = () => {
   };
 
   const handleDishUpdate = (updatedDish: TMenuItem) => {
-    // 로컬 상태 업데이트 (실제로는 refetch를 호출하여 서버에서 최신 데이터를 가져옴)
     message.success("메뉴가 성공적으로 수정되었습니다.");
-    refetch(); // 데이터를 다시 가져와서 UI 업데이트
+    refetch();
   };
 
   const handleDelete = async (dish: TMenuItem) => {
     try {
-      // 확인 대화상자
       Modal.confirm({
         title: "메뉴 삭제 확인",
         content: (
@@ -117,7 +110,6 @@ const adminPage = () => {
         cancelText: "취소",
         onOk: async () => {
           try {
-            // API 호출
             const response = await fetch(`/api/dishes/${dish.id}`, {
               method: "DELETE",
               headers: {
@@ -136,7 +128,7 @@ const adminPage = () => {
               message.success(
                 `"${dish.name}" 메뉴가 성공적으로 삭제되었습니다.`
               );
-              refetch(); // 데이터를 다시 가져와서 UI 업데이트
+              refetch();
             } else {
               throw new Error("메뉴 삭제에 실패했습니다.");
             }
@@ -255,59 +247,118 @@ const adminPage = () => {
 
   if (loading) {
     return (
-      <DishLayout
-        title="Admin Dashboard"
-        pageDescription="Admin all your restaurant dishes in one place"
-        imageUrl={
-          process.env.NEXT_PUBLIC_OG_IMAGE_URL || "/images/og-image.png"
-        }
-      >
-        <Content
-          style={{
-            padding: "0px 24px",
-            borderRadius: "10px",
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            minHeight: "400px",
-          }}
-        >
-          <Spin size="large" />
-        </Content>
-      </DishLayout>
+      <div style={{ textAlign: "center", padding: "50px" }}>
+        <Spin size="large" />
+      </div>
     );
   }
 
   if (error) {
     return (
-      <DishLayout
-        title="Admin Dashboard"
-        pageDescription="Admin all your restaurant dishes in one place"
-        imageUrl={
-          process.env.NEXT_PUBLIC_OG_IMAGE_URL || "/images/og-image.png"
+      <Alert
+        message="데이터 로딩 오류"
+        description={error}
+        type="error"
+        showIcon
+        action={
+          <Button size="small" onClick={refetch}>
+            다시 시도
+          </Button>
         }
-      >
-        <Content
-          style={{
-            padding: "0px 24px",
-            borderRadius: "10px",
-          }}
-        >
-          <Alert
-            message="데이터 로딩 오류"
-            description={error}
-            type="error"
-            showIcon
-            action={
-              <Button size="small" onClick={refetch}>
-                다시 시도
-              </Button>
-            }
-          />
-        </Content>
-      </DishLayout>
+      />
     );
   }
+
+  return (
+    <div>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          margin: "0px 0px 30px 0px",
+        }}
+      >
+        <Title style={{ margin: 0 }} level={4}>
+          메뉴 관리 ({allMenuItems.length}개)
+        </Title>
+
+        <Button
+          icon={<IconPlus />}
+          onClick={showModal}
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          메뉴 추가
+        </Button>
+      </div>
+
+      <Table
+        size="small"
+        columns={columns}
+        dataSource={allMenuItems}
+        rowKey="id"
+        style={{ fontSize: "12px" }}
+        pagination={{
+          pageSize: 10,
+          showSizeChanger: true,
+          showQuickJumper: true,
+          showTotal: (total, range) =>
+            `${range[0]}-${range[1]} / 총 ${total}개`,
+        }}
+      />
+
+      <DishModal
+        isModalOpen={isModalOpen}
+        handleOk={handleOk}
+        handleCancel={handleCancel}
+        onDishAdded={refetch}
+      />
+
+      <EditDishModal
+        isModalOpen={isEditModalOpen}
+        handleOk={handleEditOk}
+        handleCancel={handleEditCancel}
+        dish={selectedDish}
+        onUpdate={handleDishUpdate}
+      />
+    </div>
+  );
+};
+
+// 인트로 관리 컴포넌트 (준비 중)
+const IntroManagement = () => {
+  return (
+    <div style={{ textAlign: "center", padding: "50px" }}>
+      <Title level={4}>인트로 관리</Title>
+      <p>준비 중입니다. 곧 업데이트될 예정입니다.</p>
+    </div>
+  );
+};
+
+const adminPage = () => {
+  const {
+    token: { colorBgContainer },
+  } = theme.useToken();
+
+  const { useToken } = theme;
+  const { token } = useToken();
+
+  const tabItems = [
+    {
+      key: "menu",
+      label: "메뉴 관리",
+      children: <MenuManagement />,
+    },
+    {
+      key: "intro",
+      label: "인트로 관리",
+      children: <IntroManagement />,
+    },
+  ];
 
   return (
     <DishLayout
@@ -332,7 +383,7 @@ const adminPage = () => {
               display: "flex",
               flexDirection: "column",
               alignItems: "center",
-              marginBottom: " 3rem",
+              marginBottom: "3rem",
             }}
           >
             <Alert
@@ -352,66 +403,14 @@ const adminPage = () => {
             </Title>
 
             <Card style={{ width: "100%", maxWidth: "1200px" }}>
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  margin: "0px 0px 30px 0px",
-                }}
-              >
-                <Title
-                  style={{ color: token.colorPrimary, margin: 0 }}
-                  level={3}
-                >
-                  메뉴 관리 ({allMenuItems.length}개)
-                </Title>
-
-                <Button
-                  icon={<IconPlus />}
-                  onClick={showModal}
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                  }}
-                >
-                  메뉴 추가
-                </Button>
-              </div>
-
-              <Table
-                size="small"
-                columns={columns}
-                dataSource={allMenuItems}
-                rowKey="id"
-                style={{ fontSize: "12px" }}
-                pagination={{
-                  pageSize: 10,
-                  showSizeChanger: true,
-                  showQuickJumper: true,
-                  showTotal: (total, range) =>
-                    `${range[0]}-${range[1]} / 총 ${total}개`,
-                }}
+              <Tabs
+                defaultActiveKey="menu"
+                items={tabItems}
+                style={{ marginTop: "20px" }}
               />
             </Card>
           </div>
         </main>
-
-        <DishModal
-          isModalOpen={isModalOpen}
-          handleOk={handleOk}
-          handleCancel={handleCancel}
-          onDishAdded={refetch}
-        />
-
-        <EditDishModal
-          isModalOpen={isEditModalOpen}
-          handleOk={handleEditOk}
-          handleCancel={handleEditCancel}
-          dish={selectedDish}
-          onUpdate={handleDishUpdate}
-        />
       </Content>
     </DishLayout>
   );
