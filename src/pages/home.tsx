@@ -103,15 +103,34 @@ const HomePage = () => {
       setShowScrollTop(scrollTop > 300);
     };
 
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
+    // 스크롤 이벤트 최적화를 위한 throttle 적용
+    let ticking = false;
+    const optimizedScrollHandler = () => {
+      if (!ticking) {
+        requestAnimationFrame(() => {
+          handleScroll();
+          ticking = false;
+        });
+        ticking = true;
+      }
+    };
+
+    window.addEventListener("scroll", optimizedScrollHandler, {
+      passive: true,
+    });
+    return () => window.removeEventListener("scroll", optimizedScrollHandler);
   }, []);
 
   const scrollToTop = () => {
-    window.scrollTo({
-      top: 0,
-      behavior: "smooth",
-    });
+    // 부드러운 스크롤 애니메이션
+    const scrollStep = -window.scrollY / (500 / 15);
+    const scrollInterval = setInterval(() => {
+      if (window.scrollY !== 0) {
+        window.scrollBy(0, scrollStep);
+      } else {
+        clearInterval(scrollInterval);
+      }
+    }, 15);
   };
 
   return (
@@ -160,7 +179,16 @@ const HomePage = () => {
             }}
           />
 
-          <div ref={animationRef} style={{ opacity: 0 }}>
+          <div
+            ref={animationRef}
+            style={{
+              opacity: 0,
+              position: "relative",
+              zIndex: 10,
+              minHeight: "100vh",
+              paddingTop: "80px",
+            }}
+          >
             <section className={styles.restaurantInformation}>
               <div className={styles.infoMobile}>
                 {RESTAURANT_INFOS.map((info) => (

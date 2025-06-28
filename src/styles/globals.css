@@ -1,11 +1,23 @@
 body {
   margin: 0;
   padding: 0;
+  /* 스크롤 성능 향상을 위한 설정 */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
 }
 
 * {
   scroll-margin-top: 85px;
   scroll-behavior: smooth;
+  /* 스크롤 성능 향상을 위한 설정 */
+  box-sizing: border-box;
+}
+
+html {
+  /* 스크롤 성능 향상을 위한 설정 */
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
 }
 
 :root {
