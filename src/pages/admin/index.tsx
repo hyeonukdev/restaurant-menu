@@ -20,11 +20,35 @@ const { Content } = Layout;
 const { Title } = Typography;
 
 import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
+import * as AntdIcons from "@ant-design/icons";
+import {
+  IconBread,
+  IconCoffee,
+  IconBeer,
+  IconGlassFull,
+  IconIceCream2,
+  IconMeat,
+  IconFish,
+  IconSalad,
+  IconChefHat,
+  IconCake,
+  IconPizza,
+  IconApple,
+  IconCup,
+  IconBottle,
+  IconCookie,
+  IconCarrot,
+  IconEgg,
+  IconToolsKitchen2,
+  IconSoup,
+  IconBowl,
+} from "@tabler/icons-react";
 import { IconPlus } from "@tabler/icons-react";
 
 import { DishModal } from "../../components/modals/DishModal";
 import { EditDishModal } from "../../components/modals/EditDishModal";
 import { IntroModal } from "../../components/modals/IntroModal";
+import { CategoryModal } from "../../components/modals/CategoryModal";
 import { DishLayout } from "@/components/layouts";
 import { SafeImage } from "@/components/ui";
 import { useDishes } from "@/utils/useDishes";
@@ -689,6 +713,324 @@ const IntroManagement = () => {
   );
 };
 
+// 카테고리 관리 컴포넌트
+const CategoryManagement = () => {
+  const [categories, setCategories] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState<any | null>(null);
+
+  const fetchCategories = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch("/api/categories");
+      if (!response.ok) {
+        throw new Error("카테고리 정보를 가져오는데 실패했습니다.");
+      }
+      const result = await response.json();
+      setCategories(result.data);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Unknown error");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchCategories();
+  }, []);
+
+  const showModal = () => {
+    setSelectedCategory(null);
+    setIsModalOpen(true);
+  };
+
+  const handleOk = () => {
+    setIsModalOpen(false);
+    setSelectedCategory(null);
+  };
+
+  const handleCancel = () => {
+    setIsModalOpen(false);
+    setSelectedCategory(null);
+  };
+
+  const showEditModal = (category: any) => {
+    console.log("Opening edit modal for category:", category);
+    setSelectedCategory(category);
+    setIsModalOpen(true);
+  };
+
+  const handleCategoryUpdate = async (updatedCategory: any) => {
+    try {
+      const response = await fetch(`/api/categories/${updatedCategory.id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: updatedCategory.name,
+          description: updatedCategory.description,
+          icon: updatedCategory.icon,
+          display_order: updatedCategory.display_order,
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "카테고리 수정에 실패했습니다.");
+      }
+
+      const result = await response.json();
+      // 리스트에서 해당 category만 교체
+      setCategories((prev) =>
+        prev.map((item) =>
+          item.id === updatedCategory.id ? result.data : item
+        )
+      );
+
+      message.success("카테고리가 성공적으로 수정되었습니다.");
+      handleOk(); // 모달 닫기
+    } catch (error) {
+      message.error(
+        error instanceof Error ? error.message : "수정에 실패했습니다."
+      );
+    }
+  };
+
+  const handleDelete = async (category: any) => {
+    try {
+      Modal.confirm({
+        title: "카테고리 삭제 확인",
+        content: (
+          <div>
+            <p>이 카테고리를 정말로 삭제하시겠습니까?</p>
+            <p style={{ color: "#ff4d4f", fontSize: "12px" }}>
+              ⚠️ 이 카테고리에 연결된 메뉴가 있으면 삭제할 수 없습니다.
+            </p>
+          </div>
+        ),
+        okText: "삭제",
+        okType: "danger",
+        cancelText: "취소",
+        onOk: async () => {
+          try {
+            const response = await fetch(`/api/categories/${category.id}`, {
+              method: "DELETE",
+            });
+
+            if (!response.ok) {
+              const errorData = await response.json();
+              throw new Error(
+                errorData.error || "카테고리 삭제에 실패했습니다."
+              );
+            }
+
+            message.success("카테고리가 성공적으로 삭제되었습니다.");
+            fetchCategories();
+          } catch (error) {
+            message.error(
+              error instanceof Error ? error.message : "삭제에 실패했습니다."
+            );
+          }
+        },
+      });
+    } catch (error) {
+      message.error(
+        error instanceof Error ? error.message : "삭제에 실패했습니다."
+      );
+    }
+  };
+
+  // 아이콘 렌더링 함수
+  const renderIcon = (iconName: string) => {
+    const iconMap = {
+      IconBread,
+      IconCoffee,
+      IconBeer,
+      IconGlassFull,
+      IconIceCream2,
+      IconMeat,
+      IconFish,
+      IconSalad,
+      IconChefHat,
+      IconCake,
+      IconPizza,
+      IconApple,
+      IconCup,
+      IconBottle,
+      IconCookie,
+      IconCarrot,
+      IconEgg,
+      IconToolsKitchen2,
+      IconSoup,
+      IconBowl,
+    };
+
+    const IconComponent = iconMap[iconName as keyof typeof iconMap];
+    if (IconComponent) {
+      return <IconComponent size={18} />;
+    }
+    return <IconBread size={18} />;
+  };
+
+  const columns = [
+    {
+      title: "순서",
+      dataIndex: "display_order",
+      key: "display_order",
+      width: 80,
+      sorter: (a: any, b: any) => a.display_order - b.display_order,
+    },
+    {
+      title: "아이콘",
+      dataIndex: "icon",
+      key: "icon",
+      width: 80,
+      render: (icon: string) => (
+        <div style={{ textAlign: "center", fontSize: "18px" }}>
+          {renderIcon(icon)}
+        </div>
+      ),
+    },
+    {
+      title: "카테고리명",
+      dataIndex: "name",
+      key: "name",
+      width: 150,
+    },
+    {
+      title: "설명",
+      dataIndex: "description",
+      key: "description",
+      width: 250,
+      ellipsis: true,
+    },
+    {
+      title: "생성일",
+      dataIndex: "created_at",
+      key: "created_at",
+      width: 120,
+      render: (date: string) => new Date(date).toLocaleDateString(),
+    },
+    {
+      title: "작업",
+      key: "action",
+      width: 120,
+      render: (_: any, record: any) => (
+        <Space size="small">
+          <Button
+            type="text"
+            icon={
+              <EditOutlined
+                onPointerEnterCapture={undefined}
+                onPointerLeaveCapture={undefined}
+              />
+            }
+            shape="circle"
+            size="small"
+            title="수정"
+            onClick={() => showEditModal(record)}
+          />
+          <Button
+            type="text"
+            danger
+            icon={
+              <DeleteOutlined
+                onPointerEnterCapture={undefined}
+                onPointerLeaveCapture={undefined}
+              />
+            }
+            shape="circle"
+            size="small"
+            title="삭제"
+            onClick={() => handleDelete(record)}
+          />
+        </Space>
+      ),
+    },
+  ];
+
+  if (loading) {
+    return (
+      <div style={{ textAlign: "center", padding: "50px" }}>
+        <Spin size="large" />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <Alert
+        message="데이터 로딩 오류"
+        description={error}
+        type="error"
+        showIcon
+        action={
+          <Button size="small" onClick={fetchCategories}>
+            다시 시도
+          </Button>
+        }
+      />
+    );
+  }
+
+  return (
+    <div>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          margin: "0px 0px 30px 0px",
+        }}
+      >
+        <Title style={{ margin: 0 }} level={4}>
+          카테고리 관리 ({categories.length}개)
+        </Title>
+
+        <Button
+          icon={<IconPlus />}
+          onClick={showModal}
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          카테고리 추가
+        </Button>
+      </div>
+
+      <Table
+        size="small"
+        columns={columns}
+        dataSource={categories}
+        rowKey="id"
+        style={{ fontSize: "12px" }}
+        scroll={{ x: "max-content" }}
+        pagination={{
+          pageSize: 10,
+          showSizeChanger: true,
+          showQuickJumper: true,
+          showTotal: (total, range) =>
+            `${range[0]}-${range[1]} / 총 ${total}개`,
+        }}
+      />
+
+      <CategoryModal
+        isModalOpen={isModalOpen}
+        handleOk={handleOk}
+        handleCancel={handleCancel}
+        onCategoryAdded={fetchCategories}
+        category={selectedCategory}
+        onUpdate={handleCategoryUpdate}
+      />
+    </div>
+  );
+};
+
 const adminPage = () => {
   const {
     token: { colorBgContainer },
@@ -702,6 +1044,11 @@ const adminPage = () => {
       key: "menu",
       label: "메뉴 관리",
       children: <MenuManagement />,
+    },
+    {
+      key: "category",
+      label: "카테고리 관리",
+      children: <CategoryManagement />,
     },
     {
       key: "intro",

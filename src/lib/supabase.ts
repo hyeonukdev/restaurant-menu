@@ -25,6 +25,8 @@ export interface Database {
           id: number;
           name: string;
           description: string | null;
+          icon: string;
+          display_order: number;
           created_at: string;
           updated_at: string;
         };
@@ -32,6 +34,8 @@ export interface Database {
           id?: number;
           name: string;
           description?: string | null;
+          icon?: string;
+          display_order?: number;
           created_at?: string;
           updated_at?: string;
         };
@@ -39,6 +43,8 @@ export interface Database {
           id?: number;
           name?: string;
           description?: string | null;
+          icon?: string;
+          display_order?: number;
           created_at?: string;
           updated_at?: string;
         };

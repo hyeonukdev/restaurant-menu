@@ -7,11 +7,11 @@ export default async function handler(
 ) {
   if (req.method === "GET") {
     try {
-      // 1. Get all sections
+      // 1. Get all sections ordered by display_order
       const { data: sections, error: sectionsError } = await supabase
         .from("sections")
-        .select("id, name, description")
-        .order("id");
+        .select("id, name, description, display_order, icon")
+        .order("display_order", { ascending: true });
 
       if (sectionsError) {
         console.error("Sections error:", sectionsError);
@@ -83,6 +83,7 @@ export default async function handler(
           return {
             name: section.name,
             description: section.description,
+            icon: section.icon,
             items,
           };
         }) || [];

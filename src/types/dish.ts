@@ -11,5 +11,6 @@ export type TMenuItem = {
 export type TMenuSection = {
   name: string;
   description: string;
+  icon?: string;
   items: TMenuItem[];
 };

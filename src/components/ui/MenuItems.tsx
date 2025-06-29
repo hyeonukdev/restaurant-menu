@@ -1,14 +1,35 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 
 import { Menu, theme } from "antd";
 
-import { menuOptions } from "@/utils/menuOptions";
+import { useDishes } from "@/utils/useDishes";
+import { getIconForSection } from "@/utils/menuOptions";
 import styles from "../../styles/sidebar.module.css";
 
 export const MenuItems = ({ isDrawerOpen, setOpenDrawer }: any) => {
-  const [currentSection, setCurrentSection] = useState<string | null>(
-    menuOptions[0]?.key || null
-  );
+  const { dishes } = useDishes();
+
+  // 동적으로 메뉴 옵션 생성
+  const menuOptions = useMemo(() => {
+    if (!dishes || dishes.length === 0) return [];
+
+    return dishes.map((section) => ({
+      key: section.name.toLowerCase(),
+      icon: section.icon
+        ? getIconForSection(section.icon)
+        : getIconForSection(section.name),
+      label: <a href={`#${section.name.toLowerCase()}`}>{section.name}</a>,
+    }));
+  }, [dishes]);
+
+  const [currentSection, setCurrentSection] = useState<string | null>(null);
+
+  // 메뉴 옵션이 로드되면 첫 번째 섹션을 기본값으로 설정
+  useEffect(() => {
+    if (menuOptions.length > 0 && !currentSection) {
+      setCurrentSection(menuOptions[0].key);
+    }
+  }, [menuOptions, currentSection]);
   const {
     token: { colorBgContainer },
   } = theme.useToken();
