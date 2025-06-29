@@ -24,6 +24,7 @@ import { IconPlus } from "@tabler/icons-react";
 
 import { DishModal } from "../../components/modals/DishModal";
 import { EditDishModal } from "../../components/modals/EditDishModal";
+import { IntroModal } from "../../components/modals/IntroModal";
 import { DishLayout } from "@/components/layouts";
 import { SafeImage } from "@/components/ui";
 import { useDishes } from "@/utils/useDishes";
@@ -329,12 +330,287 @@ const MenuManagement = () => {
   );
 };
 
-// 인트로 관리 컴포넌트 (준비 중)
+// 인트로 관리 컴포넌트
 const IntroManagement = () => {
+  const [intros, setIntros] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedIntro, setSelectedIntro] = useState<any | null>(null);
+
+  const fetchIntros = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch("/api/restaurant/intros");
+      if (!response.ok) {
+        throw new Error("인트로 정보를 가져오는데 실패했습니다.");
+      }
+      const result = await response.json();
+      setIntros(result.data);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Unknown error");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchIntros();
+  }, []);
+
+  const showModal = () => {
+    setSelectedIntro(null);
+    setIsModalOpen(true);
+  };
+
+  const handleOk = () => {
+    setIsModalOpen(false);
+    setSelectedIntro(null);
+  };
+
+  const handleCancel = () => {
+    setIsModalOpen(false);
+    setSelectedIntro(null);
+  };
+
+  const showEditModal = (intro: any) => {
+    console.log("Opening edit modal for intro:", intro);
+    setSelectedIntro(intro);
+    setIsModalOpen(true);
+  };
+
+  const handleIntroUpdate = async (updatedIntro: any) => {
+    try {
+      const response = await fetch(
+        `/api/restaurant/intros/${updatedIntro.id}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            title: updatedIntro.title,
+            content: updatedIntro.content,
+            display_order: updatedIntro.display_order,
+            intro_type: updatedIntro.intro_type,
+            is_active: updatedIntro.is_active,
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "인트로 수정에 실패했습니다.");
+      }
+
+      const result = await response.json();
+      // 리스트에서 해당 intro만 교체
+      setIntros((prev) =>
+        prev.map((item) => (item.id === updatedIntro.id ? result.data : item))
+      );
+
+      message.success("인트로가 성공적으로 수정되었습니다.");
+      handleOk(); // 모달 닫기
+      // fetchIntros(); // 필요하다면 전체 동기화
+    } catch (error) {
+      message.error(
+        error instanceof Error ? error.message : "수정에 실패했습니다."
+      );
+    }
+  };
+
+  const handleDelete = async (intro: any) => {
+    try {
+      Modal.confirm({
+        title: "인트로 삭제 확인",
+        content: (
+          <div>
+            <p>이 인트로를 정말로 삭제하시겠습니까?</p>
+            <p style={{ color: "#ff4d4f", fontSize: "12px" }}>
+              ⚠️ 이 작업은 되돌릴 수 없습니다.
+            </p>
+          </div>
+        ),
+        okText: "삭제",
+        okType: "danger",
+        cancelText: "취소",
+        onOk: async () => {
+          try {
+            const response = await fetch(`/api/restaurant/intros/${intro.id}`, {
+              method: "DELETE",
+            });
+
+            if (!response.ok) {
+              throw new Error("인트로 삭제에 실패했습니다.");
+            }
+
+            message.success("인트로가 성공적으로 삭제되었습니다.");
+            fetchIntros();
+          } catch (error) {
+            message.error(
+              error instanceof Error ? error.message : "삭제에 실패했습니다."
+            );
+          }
+        },
+      });
+    } catch (error) {
+      message.error(
+        error instanceof Error ? error.message : "삭제에 실패했습니다."
+      );
+    }
+  };
+
+  const columns = [
+    {
+      title: "순서",
+      dataIndex: "display_order",
+      key: "display_order",
+      width: 80,
+    },
+    {
+      title: "활성화",
+      dataIndex: "is_active",
+      key: "is_active",
+      width: 80,
+      render: (is_active: boolean) => (
+        <Tag color={is_active ? "green" : "red"}>
+          {is_active ? "활성" : "비활성"}
+        </Tag>
+      ),
+    },
+    {
+      title: "타입",
+      dataIndex: "intro_type",
+      key: "intro_type",
+      width: 100,
+      render: (intro_type: string) => {
+        const typeColors: { [key: string]: string } = {
+          text: "blue",
+          highlight: "orange",
+          menu: "purple",
+          slogan: "cyan",
+        };
+        return (
+          <Tag color={typeColors[intro_type] || "default"}>{intro_type}</Tag>
+        );
+      },
+    },
+    {
+      title: "제목",
+      dataIndex: "title",
+      key: "title",
+      width: 200,
+      ellipsis: true,
+    },
+    {
+      title: "내용",
+      dataIndex: "content",
+      key: "content",
+      width: 300,
+      ellipsis: true,
+    },
+    {
+      title: "작업",
+      key: "action",
+      width: 120,
+      render: (_: any, record: any) => (
+        <Space size="small">
+          <Button
+            type="text"
+            icon={<EditOutlined />}
+            shape="circle"
+            size="small"
+            title="수정"
+            onClick={() => showEditModal(record)}
+          />
+          <Button
+            type="text"
+            danger
+            icon={<DeleteOutlined />}
+            shape="circle"
+            size="small"
+            title="삭제"
+            onClick={() => handleDelete(record)}
+          />
+        </Space>
+      ),
+    },
+  ];
+
+  if (loading) {
+    return (
+      <div style={{ textAlign: "center", padding: "50px" }}>
+        <Spin size="large" />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <Alert
+        message="데이터 로딩 오류"
+        description={error}
+        type="error"
+        showIcon
+        action={
+          <Button size="small" onClick={fetchIntros}>
+            다시 시도
+          </Button>
+        }
+      />
+    );
+  }
+
   return (
-    <div style={{ textAlign: "center", padding: "50px" }}>
-      <Title level={4}>인트로 관리</Title>
-      <p>준비 중입니다. 곧 업데이트될 예정입니다.</p>
+    <div>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          margin: "0px 0px 30px 0px",
+        }}
+      >
+        <Title style={{ margin: 0 }} level={4}>
+          인트로 관리 ({intros.length}개)
+        </Title>
+
+        <Button
+          icon={<IconPlus />}
+          onClick={showModal}
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          인트로 추가
+        </Button>
+      </div>
+
+      <Table
+        size="small"
+        columns={columns}
+        dataSource={intros}
+        rowKey="id"
+        style={{ fontSize: "12px" }}
+        pagination={{
+          pageSize: 10,
+          showSizeChanger: true,
+          showQuickJumper: true,
+          showTotal: (total, range) =>
+            `${range[0]}-${range[1]} / 총 ${total}개`,
+        }}
+      />
+
+      <IntroModal
+        isModalOpen={isModalOpen}
+        handleOk={handleOk}
+        handleCancel={handleCancel}
+        onIntroAdded={fetchIntros}
+        intro={selectedIntro}
+        onUpdate={handleIntroUpdate}
+      />
     </div>
   );
 };

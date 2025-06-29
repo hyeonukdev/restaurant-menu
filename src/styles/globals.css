@@ -1,3 +1,37 @@
+/* 눈누 고운바탕 폰트 추가 */
+@import url("https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2108@1.1/GowunBatang-Regular.woff")
+format("woff");
+@import url("https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2108@1.1/GowunBatang-Bold.woff")
+format("woff");
+
+/* 눈누 고운돋움 폰트 추가 */
+@import url("https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2108@1.1/GowunDodum-Medium.woff")
+format("woff");
+
+@font-face {
+  font-family: "GowunBatang";
+  src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2108@1.1/GowunBatang-Regular.woff")
+    format("woff");
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "GowunBatang";
+  src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2108@1.1/GowunBatang-Bold.woff")
+    format("woff");
+  font-weight: bold;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "GowunDodum";
+  src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2108@1.1/GowunDodum-Medium.woff")
+    format("woff");
+  font-weight: medium;
+  font-style: normal;
+}
+
 body {
   margin: 0;
   padding: 0;
