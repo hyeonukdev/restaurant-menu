@@ -5,7 +5,15 @@ export default async function handler(req, res) {
 
   if (req.method === "PUT") {
     try {
-      const { title, content, display_order, intro_type, is_active } = req.body;
+      const {
+        title,
+        content,
+        display_order,
+        intro_type,
+        title_align,
+        content_align,
+        is_active,
+      } = req.body;
 
       // ID를 숫자로 변환
       const numericId = parseInt(id as string, 10);
@@ -54,6 +62,8 @@ export default async function handler(req, res) {
           content: content || "",
           display_order: display_order !== undefined ? display_order : 0,
           intro_type: intro_type || "text",
+          title_align: title_align || "left",
+          content_align: content_align || "left",
           is_active: is_active !== undefined ? is_active : true,
         })
         .eq("id", numericId)

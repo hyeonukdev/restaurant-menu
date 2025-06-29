@@ -393,6 +393,8 @@ const IntroManagement = () => {
             content: updatedIntro.content,
             display_order: updatedIntro.display_order,
             intro_type: updatedIntro.intro_type,
+            title_align: updatedIntro.title_align,
+            content_align: updatedIntro.content_align,
             is_active: updatedIntro.is_active,
           }),
         }
@@ -487,11 +489,15 @@ const IntroManagement = () => {
         const typeColors: { [key: string]: string } = {
           text: "blue",
           highlight: "orange",
-          menu: "purple",
-          slogan: "cyan",
+        };
+        const typeLabels: { [key: string]: string } = {
+          text: "일반 텍스트",
+          highlight: "강조",
         };
         return (
-          <Tag color={typeColors[intro_type] || "default"}>{intro_type}</Tag>
+          <Tag color={typeColors[intro_type] || "default"}>
+            {typeLabels[intro_type] || intro_type}
+          </Tag>
         );
       },
     },
@@ -503,11 +509,57 @@ const IntroManagement = () => {
       ellipsis: true,
     },
     {
+      title: "제목 정렬",
+      dataIndex: "title_align",
+      key: "title_align",
+      width: 100,
+      render: (title_align: string) => {
+        const alignLabels: { [key: string]: string } = {
+          left: "좌측",
+          center: "가운데",
+          right: "우측",
+        };
+        const alignColors: { [key: string]: string } = {
+          left: "blue",
+          center: "green",
+          right: "orange",
+        };
+        return (
+          <Tag color={alignColors[title_align] || "default"}>
+            {alignLabels[title_align] || title_align}
+          </Tag>
+        );
+      },
+    },
+    {
       title: "내용",
       dataIndex: "content",
       key: "content",
       width: 300,
       ellipsis: true,
+    },
+    {
+      title: "내용 정렬",
+      dataIndex: "content_align",
+      key: "content_align",
+      width: 100,
+      render: (content_align: string) => {
+        const alignLabels: { [key: string]: string } = {
+          left: "좌측",
+          center: "가운데",
+          right: "우측",
+        };
+        const alignColors: { [key: string]: string } = {
+          left: "blue",
+          center: "green",
+          right: "orange",
+        };
+        return (
+          <Tag color={alignColors[content_align] || "default"}>
+            {alignLabels[content_align] || content_align}
+          </Tag>
+        );
+      },
     },
     {
       title: "작업",

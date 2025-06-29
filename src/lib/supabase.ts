@@ -180,6 +180,8 @@ export interface Database {
           display_order: number;
           is_active: boolean;
           intro_type: string;
+          title_align: string;
+          content_align: string;
           created_at: string;
           updated_at: string;
         };
@@ -190,6 +192,8 @@ export interface Database {
           display_order?: number;
           is_active?: boolean;
           intro_type?: string;
+          title_align?: string;
+          content_align?: string;
           created_at?: string;
           updated_at?: string;
         };
@@ -200,6 +204,8 @@ export interface Database {
           display_order?: number;
           is_active?: boolean;
           intro_type?: string;
+          title_align?: string;
+          content_align?: string;
           created_at?: string;
           updated_at?: string;
         };

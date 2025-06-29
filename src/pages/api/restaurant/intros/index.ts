@@ -34,7 +34,15 @@ export default async function handler(req, res) {
     }
   } else if (req.method === "POST") {
     try {
-      const { title, content, display_order, intro_type, is_active } = req.body;
+      const {
+        title,
+        content,
+        display_order,
+        intro_type,
+        title_align,
+        content_align,
+        is_active,
+      } = req.body;
 
       // 데이터 검증
       if (!title && !content) {
@@ -51,6 +59,8 @@ export default async function handler(req, res) {
           content: content || "",
           display_order: display_order || 0,
           intro_type: intro_type || "text",
+          title_align: title_align || "left",
+          content_align: content_align || "left",
           is_active: is_active !== undefined ? is_active : true,
         })
         .select()

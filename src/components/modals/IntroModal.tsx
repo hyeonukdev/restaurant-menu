@@ -33,6 +33,8 @@ export const IntroModal = ({
           content: intro.content,
           display_order: intro.display_order,
           intro_type: intro.intro_type,
+          title_align: intro.title_align || "left",
+          content_align: intro.content_align || "left",
           is_active: intro.is_active,
         });
       } else {
@@ -40,15 +42,35 @@ export const IntroModal = ({
         form.setFieldsValue({
           display_order: 0,
           intro_type: "text",
+          title_align: "left",
+          content_align: "left",
           is_active: true,
         });
       }
     }
   }, [isModalOpen, intro, form, isEditMode]);
 
+  // 제목 또는 내용 중 하나는 필수인지 검증하는 함수
+  const validateTitleOrContent = (rule: any, value: any) => {
+    const title = form.getFieldValue("title");
+    const content = form.getFieldValue("content");
+
+    if (!title && !content) {
+      return Promise.reject(new Error("제목 또는 내용 중 하나는 필수입니다."));
+    }
+    return Promise.resolve();
+  };
+
   const handleSubmit = async () => {
     try {
       const values = await form.validateFields();
+
+      // 추가 검증: 제목 또는 내용 중 하나는 반드시 있어야 함
+      if (!values.title && !values.content) {
+        message.error("제목 또는 내용 중 하나는 필수입니다.");
+        return;
+      }
+
       setLoading(true);
 
       if (isEditMode) {
@@ -120,8 +142,7 @@ export const IntroModal = ({
           label="제목"
           rules={[
             {
-              required: false,
-              message: "제목을 입력해주세요.",
+              validator: validateTitleOrContent,
             },
           ]}
         >
@@ -129,21 +150,54 @@ export const IntroModal = ({
         </Form.Item>
 
         <Form.Item
+          name="title_align"
+          label="제목 정렬"
+          rules={[
+            {
+              required: true,
+              message: "제목 정렬을 선택해주세요.",
+            },
+          ]}
+        >
+          <Select placeholder="제목 정렬을 선택하세요">
+            <Option value="left">좌측 정렬</Option>
+            <Option value="center">가운데 정렬</Option>
+            <Option value="right">우측 정렬</Option>
+          </Select>
+        </Form.Item>
+
+        <Form.Item
           name="content"
           label="내용"
           rules={[
             {
-              required: true,
-              message: "내용을 입력해주세요.",
+              validator: validateTitleOrContent,
             },
           ]}
         >
           <TextArea
-            placeholder="내용을 입력하세요. 개행은 Enter 키를 사용하세요."
+            placeholder="내용을 입력하세요. 개행은 Enter 키를 사용하세요. (선택사항)"
             rows={6}
             maxLength={1000}
             showCount
           />
+        </Form.Item>
+
+        <Form.Item
+          name="content_align"
+          label="내용 정렬"
+          rules={[
+            {
+              required: true,
+              message: "내용 정렬을 선택해주세요.",
+            },
+          ]}
+        >
+          <Select placeholder="내용 정렬을 선택하세요">
+            <Option value="left">좌측 정렬</Option>
+            <Option value="center">가운데 정렬</Option>
+            <Option value="right">우측 정렬</Option>
+          </Select>
         </Form.Item>
 
         <Form.Item
@@ -176,9 +230,7 @@ export const IntroModal = ({
         >
           <Select placeholder="타입을 선택하세요">
             <Option value="text">일반 텍스트</Option>
-            <Option value="highlight">하이라이트</Option>
-            <Option value="menu">메뉴 소개</Option>
-            <Option value="slogan">슬로건</Option>
+            <Option value="highlight">강조</Option>
           </Select>
         </Form.Item>
 

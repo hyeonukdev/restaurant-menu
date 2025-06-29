@@ -199,7 +199,7 @@ export default function Home() {
             position: "relative",
           }}
           bodyStyle={{
-            padding: "clamp(24px, 5vw, 40px)",
+            padding: "clamp(16px, 4vw, 28px)",
             position: "relative",
           }}
         >
@@ -263,7 +263,7 @@ export default function Home() {
                       marginBottom: "16px",
                       lineHeight: 1.4,
                       fontFamily: "'GowunBatang', serif",
-                      textAlign: index === 0 ? "center" : "left",
+                      textAlign: (intro as any).titleAlign || "left",
                       wordWrap: "break-word",
                       overflowWrap: "break-word",
                       wordBreak: "keep-all",
@@ -281,7 +281,7 @@ export default function Home() {
                       fontSize: "clamp(0.9rem, 3vw, 1.1rem)",
                       lineHeight: 1.8,
                       whiteSpace: "pre-line",
-                      textAlign: "left",
+                      textAlign: (intro as any).contentAlign || "left",
                       fontFamily: "'GowunBatang', serif",
                       letterSpacing: "0.5px",
                       marginBottom:

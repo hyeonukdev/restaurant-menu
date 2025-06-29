@@ -79,6 +79,9 @@ export default async function handler(req, res) {
           id: intro.id.toString(),
           title: intro.title,
           content: convertNewlines(intro.content),
+          titleAlign: intro.title_align || "left",
+          contentAlign: intro.content_align || "left",
+          introType: intro.intro_type,
         })),
         images: {
           ogImage: restaurantData.images_og_image,
