@@ -41,11 +41,27 @@ export const DishesNavbar = () => {
         </Link>
 
         <div className={navStyles.hamburgerMenuIcon}>
-          <Button onClick={showDrawer} icon={<MenuOutlined />} />
+          <Button
+            onClick={showDrawer}
+            icon={
+              <MenuOutlined
+                onPointerEnterCapture={undefined}
+                onPointerLeaveCapture={undefined}
+              />
+            }
+          />
         </div>
 
         <div className={styles.headerButtonsContainer}>
-          <Button icon={<HomeOutlined />} onClick={() => router.push("/")}>
+          <Button
+            icon={
+              <HomeOutlined
+                onPointerEnterCapture={undefined}
+                onPointerLeaveCapture={undefined}
+              />
+            }
+            onClick={() => router.push("/")}
+          >
             Home
           </Button>
         </div>

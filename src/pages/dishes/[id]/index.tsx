@@ -191,7 +191,13 @@ const Dish = () => {
               <Tooltip title="Back to Menu">
                 <Button
                   onClick={() => router.push("/dishes")}
-                  icon={<ArrowLeftOutlined style={{ fontSize: "13px" }} />}
+                  icon={
+                    <ArrowLeftOutlined
+                      style={{ fontSize: "13px" }}
+                      onPointerEnterCapture={undefined}
+                      onPointerLeaveCapture={undefined}
+                    />
+                  }
                   className={styles.detailsButton}
                   style={{
                     background: token.colorInfoBg,

@@ -50,7 +50,12 @@ export const DishesDrawer = ({ open, setOpen }) => {
           <Button
             href="https://www.instagram.com/aukra.yangjae/"
             target="_blank"
-            icon={<InstagramOutlined />}
+            icon={
+              <InstagramOutlined
+                onPointerEnterCapture={undefined}
+                onPointerLeaveCapture={undefined}
+              />
+            }
           >
             @aukra.yangjae
           </Button>

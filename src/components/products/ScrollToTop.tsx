@@ -33,7 +33,12 @@ export const ScrollToTop = () => {
           size="large"
           onClick={goToTop}
           className={styles.button}
-          icon={<VerticalAlignTopOutlined />}
+          icon={
+            <VerticalAlignTopOutlined
+              onPointerEnterCapture={undefined}
+              onPointerLeaveCapture={undefined}
+            />
+          }
         />
       )}
     </>

@@ -42,7 +42,12 @@ export const HomeNavbar = () => {
 
         <div className={styles.menuIcon}>
           <Button
-            icon={<ReadOutlined />}
+            icon={
+              <ReadOutlined
+                onPointerEnterCapture={undefined}
+                onPointerLeaveCapture={undefined}
+              />
+            }
             onClick={() => router.push("/dishes")}
           />
         </div>
@@ -50,7 +55,12 @@ export const HomeNavbar = () => {
         {/* desktop */}
         <div className={styles.headerButtonsContainer}>
           <Button
-            icon={<ReadOutlined />}
+            icon={
+              <ReadOutlined
+                onPointerEnterCapture={undefined}
+                onPointerLeaveCapture={undefined}
+              />
+            }
             onClick={() => router.push("/dishes")}
           >
             Menu

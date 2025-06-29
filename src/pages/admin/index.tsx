@@ -226,7 +226,12 @@ const MenuManagement = () => {
         <Space size="small">
           <Button
             type="text"
-            icon={<EditOutlined />}
+            icon={
+              <EditOutlined
+                onPointerEnterCapture={undefined}
+                onPointerLeaveCapture={undefined}
+              />
+            }
             shape="circle"
             size="small"
             title="수정"
@@ -235,7 +240,12 @@ const MenuManagement = () => {
           <Button
             type="text"
             danger
-            icon={<DeleteOutlined />}
+            icon={
+              <DeleteOutlined
+                onPointerEnterCapture={undefined}
+                onPointerLeaveCapture={undefined}
+              />
+            }
             shape="circle"
             size="small"
             title="삭제"
@@ -569,7 +579,12 @@ const IntroManagement = () => {
         <Space size="small">
           <Button
             type="text"
-            icon={<EditOutlined />}
+            icon={
+              <EditOutlined
+                onPointerEnterCapture={undefined}
+                onPointerLeaveCapture={undefined}
+              />
+            }
             shape="circle"
             size="small"
             title="수정"
@@ -578,7 +593,12 @@ const IntroManagement = () => {
           <Button
             type="text"
             danger
-            icon={<DeleteOutlined />}
+            icon={
+              <DeleteOutlined
+                onPointerEnterCapture={undefined}
+                onPointerLeaveCapture={undefined}
+              />
+            }
             shape="circle"
             size="small"
             title="삭제"

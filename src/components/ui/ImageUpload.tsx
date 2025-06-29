@@ -152,7 +152,12 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
             {isNewImage && currentImageUrl && (
               <Button
                 type="text"
-                icon={<ReloadOutlined />}
+                icon={
+                  <ReloadOutlined
+                    onPointerEnterCapture={undefined}
+                    onPointerLeaveCapture={undefined}
+                  />
+                }
                 onClick={handleKeepOriginal}
                 disabled={disabled}
                 style={{
@@ -166,7 +171,12 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
 
             <Button
               type="text"
-              icon={<DeleteOutlined />}
+              icon={
+                <DeleteOutlined
+                  onPointerEnterCapture={undefined}
+                  onPointerLeaveCapture={undefined}
+                />
+              }
               onClick={handleRemoveImage}
               disabled={disabled}
               style={{
@@ -213,6 +223,8 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
             ) : (
               <PictureOutlined
                 style={{ fontSize: "32px", color: "#999", marginBottom: 8 }}
+                onPointerEnterCapture={undefined}
+                onPointerLeaveCapture={undefined}
               />
             )}
             <div style={{ color: "#666", fontSize: "14px" }}>
@@ -237,7 +249,12 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
             id="image-replace"
           />
           <Button
-            icon={<UploadOutlined />}
+            icon={
+              <UploadOutlined
+                onPointerEnterCapture={undefined}
+                onPointerLeaveCapture={undefined}
+              />
+            }
             disabled={disabled || uploading}
             loading={uploading}
             style={{ marginRight: 8 }}

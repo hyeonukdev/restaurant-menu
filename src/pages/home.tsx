@@ -27,7 +27,7 @@ export default function Home() {
         <div style={{ textAlign: "center" }}>
           <Spin size="large" />
           <Paragraph style={{ color: "#fff", marginTop: 16 }}>
-            로딩 중...
+            오크라의 이야기를 가져오는 중...
           </Paragraph>
         </div>
       </Layout>

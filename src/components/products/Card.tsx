@@ -82,7 +82,13 @@ export const PlateCard = ({
         <Tooltip title="Details">
           <Button
             onClick={handleDetailsClick}
-            icon={<ArrowRightOutlined style={{ fontSize: "13px" }} />}
+            icon={
+              <ArrowRightOutlined
+                style={{ fontSize: "13px" }}
+                onPointerEnterCapture={undefined}
+                onPointerLeaveCapture={undefined}
+              />
+            }
             className={styles.detailsButton}
             style={{
               background: token.colorInfoBg,
