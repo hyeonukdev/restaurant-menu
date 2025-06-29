@@ -231,14 +231,6 @@ export const EditDishModal = ({
             />
           </Form.Item>
 
-          {/* 디버깅용 정보 표시 */}
-          <div
-            style={{ fontSize: "12px", color: "#666", marginBottom: "16px" }}
-          >
-            디버깅: 카테고리 {categories.length}개, 로딩:{" "}
-            {categoriesLoading ? "Y" : "N"}
-          </div>
-
           <Form.Item
             label="기본 가격"
             name="price"

@@ -245,8 +245,15 @@ export const CategoryModal = ({
           <Select
             placeholder="아이콘을 선택하세요"
             showSearch
-            virtual
-            listHeight={250}
+            virtual={false}
+            listHeight={300}
+            dropdownStyle={{
+              maxHeight: 300,
+              overflowY: "auto",
+            }}
+            getPopupContainer={(triggerNode) =>
+              triggerNode.parentElement || document.body
+            }
             filterOption={(input, option) =>
               String(option?.label ?? "")
                 .toLowerCase()

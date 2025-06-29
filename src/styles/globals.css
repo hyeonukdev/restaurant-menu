@@ -71,3 +71,29 @@ html {
 .ant-drawer-header {
   display: none !important;
 }
+
+/* 토스트 메시지가 헤더보다 위에 표시되도록 z-index 설정 */
+.ant-message {
+  z-index: 10000 !important;
+}
+
+/* 모달과 기타 팝업 컴포넌트들도 헤더보다 위에 표시되도록 설정 */
+.ant-modal-root {
+  z-index: 10000 !important;
+}
+
+.ant-notification {
+  z-index: 10000 !important;
+}
+
+.ant-popover {
+  z-index: 10000 !important;
+}
+
+.ant-tooltip {
+  z-index: 10000 !important;
+}
+
+.ant-dropdown {
+  z-index: 10000 !important;
+}
