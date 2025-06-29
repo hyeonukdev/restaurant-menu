@@ -51,8 +51,15 @@ export default async function handler(
     }
   } else if (req.method === "PUT") {
     try {
-      const { name, description, ingredients, imageUrl, bestSeller, price } =
-        req.body;
+      const {
+        name,
+        description,
+        ingredients,
+        imageUrl,
+        bestSeller,
+        price,
+        category,
+      } = req.body;
 
       // Update dish
       const { data: updatedDish, error: dishError } = await supabase
@@ -72,6 +79,32 @@ export default async function handler(
       if (dishError) {
         console.error("Supabase dish update error:", dishError);
         return res.status(500).json({ error: "Failed to update dish" });
+      }
+
+      // 카테고리가 변경된 경우 section_items 테이블도 업데이트
+      if (category) {
+        // 새로운 섹션 ID 가져오기
+        const { data: newSection, error: sectionError } = await supabase
+          .from("sections")
+          .select("id")
+          .eq("name", category)
+          .single();
+
+        if (sectionError) {
+          console.error("Section lookup error:", sectionError);
+          return res.status(400).json({ error: "Invalid category" });
+        }
+
+        // 기존 section_items 업데이트
+        const { error: sectionItemError } = await supabase
+          .from("section_items")
+          .update({ section_id: newSection.id })
+          .eq("dish_id", id);
+
+        if (sectionItemError) {
+          console.error("Section item update error:", sectionItemError);
+          return res.status(500).json({ error: "Failed to update category" });
+        }
       }
 
       res.status(200).json({

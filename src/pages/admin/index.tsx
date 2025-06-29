@@ -54,17 +54,7 @@ import { SafeImage } from "@/components/ui";
 import { useDishes } from "@/utils/useDishes";
 import { TMenuItem } from "@/types/dish";
 
-// 카테고리 매핑
-const getCategoryName = (sectionName: string) => {
-  const categoryMap: { [key: string]: string } = {
-    Dishes: "메인 요리",
-    Coffee: "커피",
-    Beer: "맥주",
-    Wine: "와인",
-    Desserts: "디저트",
-  };
-  return categoryMap[sectionName] || sectionName;
-};
+// 카테고리 매핑 함수 제거 - 이제 실제 카테고리 이름을 그대로 사용
 
 // 모든 메뉴 아이템을 평면화하는 함수
 const flattenMenuItems = (sections: any[]): TMenuItem[] => {
@@ -77,11 +67,43 @@ const flattenMenuItems = (sections: any[]): TMenuItem[] => {
 };
 
 // 메뉴 관리 컴포넌트
-const MenuManagement = () => {
+const MenuManagement = ({ onTabChange }: { onTabChange?: number }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [selectedDish, setSelectedDish] = useState<TMenuItem | null>(null);
+  const [categories, setCategories] = useState<any[]>([]);
+  const [categoriesLoading, setCategoriesLoading] = useState(false);
   const { dishes, loading, error, refetch } = useDishes();
+
+  // 카테고리 정보 가져오기
+  const fetchCategories = async () => {
+    setCategoriesLoading(true);
+    try {
+      const response = await fetch("/api/categories");
+      if (response.ok) {
+        const result = await response.json();
+        setCategories(result.data || []);
+      } else {
+        console.error("카테고리 정보를 가져오는데 실패했습니다.");
+      }
+    } catch (error) {
+      console.error("카테고리 fetch 오류:", error);
+    } finally {
+      setCategoriesLoading(false);
+    }
+  };
+
+  // 컴포넌트가 마운트될 때와 탭이 변경될 때 카테고리 정보 가져오기
+  useEffect(() => {
+    fetchCategories();
+  }, []);
+
+  // onTabChange가 호출될 때마다 카테고리 정보 새로고침
+  useEffect(() => {
+    if (onTabChange) {
+      fetchCategories();
+    }
+  }, [onTabChange]);
 
   // 모든 메뉴 아이템을 평면화
   const allMenuItems = dishes ? flattenMenuItems(dishes) : [];
@@ -206,9 +228,7 @@ const MenuManagement = () => {
       dataIndex: "category",
       key: "category",
       width: 100,
-      render: (category: string) => (
-        <Tag color="blue">{getCategoryName(category)}</Tag>
-      ),
+      render: (category: string) => <Tag color="blue">{category}</Tag>,
     },
     {
       title: "재료",
@@ -352,6 +372,8 @@ const MenuManagement = () => {
         handleOk={handleOk}
         handleCancel={handleCancel}
         onDishAdded={refetch}
+        categories={categories}
+        categoriesLoading={categoriesLoading}
       />
 
       <EditDishModal
@@ -360,6 +382,8 @@ const MenuManagement = () => {
         handleCancel={handleEditCancel}
         dish={selectedDish}
         onUpdate={handleDishUpdate}
+        categories={categories}
+        categoriesLoading={categoriesLoading}
       />
     </div>
   );
@@ -1032,6 +1056,9 @@ const CategoryManagement = () => {
 };
 
 const adminPage = () => {
+  const [activeTab, setActiveTab] = useState("menu");
+  const [menuTabRefreshTrigger, setMenuTabRefreshTrigger] = useState(0);
+
   const {
     token: { colorBgContainer },
   } = theme.useToken();
@@ -1039,11 +1066,19 @@ const adminPage = () => {
   const { useToken } = theme;
   const { token } = useToken();
 
+  const handleTabChange = (key: string) => {
+    setActiveTab(key);
+    // 메뉴 관리 탭으로 전환될 때 카테고리 정보 새로고침
+    if (key === "menu") {
+      setMenuTabRefreshTrigger((prev) => prev + 1);
+    }
+  };
+
   const tabItems = [
     {
       key: "menu",
       label: "메뉴 관리",
-      children: <MenuManagement />,
+      children: <MenuManagement onTabChange={menuTabRefreshTrigger} />,
     },
     {
       key: "category",
@@ -1104,6 +1139,8 @@ const adminPage = () => {
             >
               <Tabs
                 defaultActiveKey="menu"
+                activeKey={activeTab}
+                onChange={handleTabChange}
                 items={tabItems}
                 style={{ marginTop: "20px" }}
               />

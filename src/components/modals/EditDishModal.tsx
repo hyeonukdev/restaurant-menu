@@ -22,6 +22,8 @@ interface EditDishModalProps {
   handleCancel: () => void;
   dish: TMenuItem | null;
   onUpdate: (updatedDish: TMenuItem) => void;
+  categories?: any[];
+  categoriesLoading?: boolean;
 }
 
 export const EditDishModal = ({
@@ -30,18 +32,27 @@ export const EditDishModal = ({
   handleCancel,
   dish,
   onUpdate,
+  categories = [],
+  categoriesLoading = false,
 }: EditDishModalProps) => {
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
   const [imageUrl, setImageUrl] = useState<string>(dish?.imageUrl || "");
 
-  const categoryOptions = [
-    { value: "Dishes", label: "메인 요리" },
-    { value: "Coffee", label: "커피" },
-    { value: "Beer", label: "맥주" },
-    { value: "Wine", label: "와인" },
-    { value: "Desserts", label: "디저트" },
-  ];
+  // 동적 카테고리 옵션 생성
+  const categoryOptions =
+    categories.length > 0
+      ? categories.map((category) => ({
+          value: category.name,
+          label: category.name,
+        }))
+      : [
+          { value: "Dishes", label: "Dishes" },
+          { value: "Coffee", label: "Coffee" },
+          { value: "Beer", label: "Beer" },
+          { value: "Wine", label: "Wine" },
+          { value: "Desserts", label: "Desserts" },
+        ];
 
   // 모달이 열릴 때 폼 초기값 설정
   const handleModalOpen = () => {
@@ -53,6 +64,7 @@ export const EditDishModal = ({
         name: dish.name,
         ingredients: dish.ingredients,
         description: dish.description,
+        category: (dish as any).category, // 카테고리 값 설정
         price: dish.price,
         bestSeller: dish.bestSeller,
         imageUrl: dish.imageUrl,
@@ -81,13 +93,19 @@ export const EditDishModal = ({
         imageUrl: imageUrl || values.imageUrl || "",
       };
 
+      // API 요청에 카테고리 정보도 포함
+      const apiPayload = {
+        ...updatedDish,
+        category: values.category,
+      };
+
       // API 호출
       const response = await fetch(`/api/dishes/${dish.id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(updatedDish),
+        body: JSON.stringify(apiPayload),
       });
 
       if (!response.ok) {
@@ -198,6 +216,28 @@ export const EditDishModal = ({
           >
             <TextArea rows={3} placeholder="메뉴에 대한 설명을 입력하세요" />
           </Form.Item>
+
+          <Form.Item
+            label="카테고리"
+            name="category"
+            rules={[{ required: true, message: "카테고리를 선택하세요" }]}
+          >
+            <Select
+              style={{ width: "100%" }}
+              options={categoryOptions}
+              placeholder={`카테고리를 선택하세요 (${categoryOptions.length}개 옵션)`}
+              loading={categoriesLoading}
+              disabled={categoriesLoading}
+            />
+          </Form.Item>
+
+          {/* 디버깅용 정보 표시 */}
+          <div
+            style={{ fontSize: "12px", color: "#666", marginBottom: "16px" }}
+          >
+            디버깅: 카테고리 {categories.length}개, 로딩:{" "}
+            {categoriesLoading ? "Y" : "N"}
+          </div>
 
           <Form.Item
             label="기본 가격"

@@ -20,6 +20,8 @@ interface DishModalProps {
   handleOk: () => void;
   handleCancel: () => void;
   onDishAdded: () => void;
+  categories?: any[];
+  categoriesLoading?: boolean;
 }
 
 export const DishModal = ({
@@ -27,6 +29,8 @@ export const DishModal = ({
   handleOk,
   handleCancel,
   onDishAdded,
+  categories = [],
+  categoriesLoading = false,
 }: DishModalProps) => {
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
@@ -101,13 +105,20 @@ export const DishModal = ({
     form.setFieldValue("imageUrl", "");
   };
 
-  const categoryOptions = [
-    { value: "Dishes", label: "메인 요리" },
-    { value: "Coffee", label: "커피" },
-    { value: "Beer", label: "맥주" },
-    { value: "Wine", label: "와인" },
-    { value: "Desserts", label: "디저트" },
-  ];
+  // 동적 카테고리 옵션 생성
+  const categoryOptions =
+    categories.length > 0
+      ? categories.map((category) => ({
+          value: category.name,
+          label: category.name,
+        }))
+      : [
+          { value: "Dishes", label: "Dishes" },
+          { value: "Coffee", label: "Coffee" },
+          { value: "Beer", label: "Beer" },
+          { value: "Wine", label: "Wine" },
+          { value: "Desserts", label: "Desserts" },
+        ];
 
   return (
     <>
@@ -174,12 +185,14 @@ export const DishModal = ({
             label="카테고리"
             name="category"
             rules={[{ required: true, message: "카테고리를 선택하세요" }]}
-            initialValue="Dishes"
+            initialValue={categoryOptions[0]?.value || "Dishes"}
           >
             <Select
               style={{ width: "100%" }}
               options={categoryOptions}
               placeholder="카테고리를 선택하세요"
+              loading={categoriesLoading}
+              disabled={categoriesLoading}
             />
           </Form.Item>
 
