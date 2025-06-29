@@ -313,6 +313,7 @@ const MenuManagement = () => {
         dataSource={allMenuItems}
         rowKey="id"
         style={{ fontSize: "12px" }}
+        scroll={{ x: "max-content" }}
         pagination={{
           pageSize: 10,
           showSizeChanger: true,
@@ -666,6 +667,7 @@ const IntroManagement = () => {
         dataSource={intros}
         rowKey="id"
         style={{ fontSize: "12px" }}
+        scroll={{ x: "max-content" }}
         pagination={{
           pageSize: 10,
           showSizeChanger: true,
@@ -750,7 +752,9 @@ const adminPage = () => {
               관리자 페이지
             </Title>
 
-            <Card style={{ width: "100%", maxWidth: "1200px" }}>
+            <Card
+              style={{ width: "100%", maxWidth: "1200px", overflowX: "auto" }}
+            >
               <Tabs
                 defaultActiveKey="menu"
                 items={tabItems}
